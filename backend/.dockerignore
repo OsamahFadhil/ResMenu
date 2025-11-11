@@ -1,0 +1,15 @@
+**/.git
+**/.gitignore
+**/.vs
+**/.vscode
+**/bin
+**/obj
+**/*.user
+**/*.suo
+**/appsettings.Development.json
+**/Dockerfile*
+**/docker-compose*
+**/.env
+**/.env.*
+**/README.md
+**/Migrations/00000000000000_InitialCreate.Designer.cs

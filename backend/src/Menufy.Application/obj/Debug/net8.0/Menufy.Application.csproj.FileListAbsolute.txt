@@ -1,0 +1,15 @@
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Application\bin\Debug\net8.0\Menufy.Application.deps.json
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Application\bin\Debug\net8.0\Menufy.Application.dll
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Application\bin\Debug\net8.0\Menufy.Application.pdb
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Application\bin\Debug\net8.0\Menufy.Domain.dll
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Application\bin\Debug\net8.0\Menufy.Domain.pdb
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Application\obj\Debug\net8.0\Menufy.Application.csproj.AssemblyReference.cache
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Application\obj\Debug\net8.0\Menufy.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Application\obj\Debug\net8.0\Menufy.Application.AssemblyInfoInputs.cache
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Application\obj\Debug\net8.0\Menufy.Application.AssemblyInfo.cs
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Application\obj\Debug\net8.0\Menufy.Application.csproj.CoreCompileInputs.cache
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Application\obj\Debug\net8.0\Menufy.A.91495C3E.Up2Date
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Application\obj\Debug\net8.0\Menufy.Application.dll
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Application\obj\Debug\net8.0\refint\Menufy.Application.dll
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Application\obj\Debug\net8.0\Menufy.Application.pdb
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Application\obj\Debug\net8.0\ref\Menufy.Application.dll

@@ -1,0 +1,11 @@
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Domain\bin\Debug\net8.0\Menufy.Domain.deps.json
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Domain\bin\Debug\net8.0\Menufy.Domain.dll
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Domain\bin\Debug\net8.0\Menufy.Domain.pdb
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Domain\obj\Debug\net8.0\Menufy.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Domain\obj\Debug\net8.0\Menufy.Domain.AssemblyInfoInputs.cache
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Domain\obj\Debug\net8.0\Menufy.Domain.AssemblyInfo.cs
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Domain\obj\Debug\net8.0\Menufy.Domain.csproj.CoreCompileInputs.cache
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Domain\obj\Debug\net8.0\Menufy.Domain.dll
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Domain\obj\Debug\net8.0\refint\Menufy.Domain.dll
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Domain\obj\Debug\net8.0\Menufy.Domain.pdb
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Domain\obj\Debug\net8.0\ref\Menufy.Domain.dll
