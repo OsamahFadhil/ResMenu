@@ -4,6 +4,8 @@ using Menufy.Application.Common.Models;
 using Menufy.Application.Features.Menus.DTOs;
 using Menufy.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Text.Json;
 
 namespace Menufy.Application.Features.Menus.Commands.CreateCategory;
 
@@ -46,6 +48,7 @@ public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryComman
         {
             Id = Guid.NewGuid(),
             Name = request.Dto.Name,
+            Translations = SerializeCategoryTranslations(request.Dto.Translations),
             DisplayOrder = request.Dto.DisplayOrder,
             RestaurantId = request.RestaurantId,
             ParentCategoryId = parentCategoryId,
@@ -59,12 +62,24 @@ public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryComman
         {
             Id = category.Id,
             Name = category.Name,
+            LocalizedName = category.Name,
             DisplayOrder = category.DisplayOrder,
             ParentCategoryId = category.ParentCategoryId,
+            Translations = request.Dto.Translations,
             Children = new List<MenuCategoryDto>(),
             Items = new List<MenuItemDto>()
         };
 
         return Result<MenuCategoryDto>.SuccessResult(dto, "Category created successfully");
+    }
+
+    private static string? SerializeCategoryTranslations(Dictionary<string, string>? translations)
+    {
+        if (translations == null || translations.Count == 0)
+        {
+            return null;
+        }
+
+        return JsonSerializer.Serialize(translations);
     }
 }

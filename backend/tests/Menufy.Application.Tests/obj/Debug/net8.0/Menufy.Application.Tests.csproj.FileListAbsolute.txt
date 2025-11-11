@@ -134,3 +134,4 @@ C:\Users\pc1\Documents\menufy\backend\tests\Menufy.Application.Tests\obj\Debug\n
 C:\Users\pc1\Documents\menufy\backend\tests\Menufy.Application.Tests\obj\Debug\net8.0\Menufy.Application.Tests.pdb
 C:\Users\pc1\Documents\menufy\backend\tests\Menufy.Application.Tests\obj\Debug\net8.0\Menufy.Application.Tests.genruntimeconfig.cache
 C:\Users\pc1\Documents\menufy\backend\tests\Menufy.Application.Tests\obj\Debug\net8.0\ref\Menufy.Application.Tests.dll
+C:\Users\pc1\Documents\menufy\backend\tests\Menufy.Application.Tests\obj\Debug\net8.0\Menufy.Application.Tests.sourcelink.json

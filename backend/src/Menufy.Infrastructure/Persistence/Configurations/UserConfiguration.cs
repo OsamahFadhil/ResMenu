@@ -29,9 +29,23 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.Role)
             .IsRequired();
 
+        builder.Property(u => u.IsActive)
+            .HasDefaultValue(true);
+
+        builder.Property(u => u.EmailVerified)
+            .HasDefaultValue(false);
+
+        builder.Property(u => u.ResetPasswordToken)
+            .HasMaxLength(500);
+
         builder.HasMany(u => u.Restaurants)
             .WithOne(r => r.Owner)
             .HasForeignKey(r => r.OwnerId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(u => u.RefreshTokens)
+            .WithOne(rt => rt.User)
+            .HasForeignKey(rt => rt.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

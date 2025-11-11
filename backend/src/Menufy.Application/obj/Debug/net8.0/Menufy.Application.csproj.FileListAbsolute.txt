@@ -13,3 +13,4 @@ C:\Users\pc1\Documents\menufy\backend\src\Menufy.Application\obj\Debug\net8.0\Me
 C:\Users\pc1\Documents\menufy\backend\src\Menufy.Application\obj\Debug\net8.0\refint\Menufy.Application.dll
 C:\Users\pc1\Documents\menufy\backend\src\Menufy.Application\obj\Debug\net8.0\Menufy.Application.pdb
 C:\Users\pc1\Documents\menufy\backend\src\Menufy.Application\obj\Debug\net8.0\ref\Menufy.Application.dll
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Application\obj\Debug\net8.0\Menufy.Application.sourcelink.json

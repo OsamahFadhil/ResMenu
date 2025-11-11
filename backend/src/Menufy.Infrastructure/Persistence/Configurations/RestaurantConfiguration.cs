@@ -35,6 +35,12 @@ public class RestaurantConfiguration : IEntityTypeConfiguration<Restaurant>
         builder.Property(r => r.Address)
             .HasMaxLength(500);
 
+        builder.Property(r => r.Translations)
+            .HasColumnType("jsonb");
+
+        builder.Property(r => r.IsActive)
+            .HasDefaultValue(true);
+
         builder.HasMany(r => r.MenuCategories)
             .WithOne(c => c.Restaurant)
             .HasForeignKey(c => c.RestaurantId)

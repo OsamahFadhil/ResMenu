@@ -34,15 +34,26 @@ public class GetPublicMenuQueryHandler : IRequestHandler<GetPublicMenuQuery, Res
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
+        var categoriesDto = MenuCategoryTreeBuilder.BuildTree(
+            categories,
+            request.Language,
+            item => item.IsAvailable);
+
+        var localizedRestaurantName = string.IsNullOrWhiteSpace(request.Language)
+            ? restaurant.GetTranslatedName()
+            : restaurant.GetTranslatedName(request.Language);
+
         var menuDto = new PublicMenuDto
         {
             RestaurantId = restaurant.Id,
             RestaurantName = restaurant.Name,
+            RestaurantLocalizedName = localizedRestaurantName,
             LogoUrl = restaurant.LogoUrl,
             ContactPhone = restaurant.ContactPhone,
             ContactEmail = restaurant.ContactEmail,
             Address = restaurant.Address,
-            Categories = MenuCategoryTreeBuilder.BuildTree(categories, item => item.IsAvailable)
+            Language = string.IsNullOrWhiteSpace(request.Language) ? "en" : request.Language!,
+            Categories = categoriesDto
         };
 
         return Result<PublicMenuDto>.SuccessResult(menuDto);

@@ -19,6 +19,9 @@ public class MenuItemConfiguration : IEntityTypeConfiguration<MenuItem>
         builder.Property(i => i.Description)
             .HasMaxLength(1000);
 
+        builder.Property(i => i.Translations)
+            .HasColumnType("jsonb");
+
         builder.Property(i => i.Price)
             .IsRequired()
             .HasPrecision(18, 2);

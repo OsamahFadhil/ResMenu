@@ -17,3 +17,4 @@ C:\Users\pc1\Documents\menufy\backend\src\Menufy.Infrastructure\obj\Debug\net8.0
 C:\Users\pc1\Documents\menufy\backend\src\Menufy.Infrastructure\obj\Debug\net8.0\Menufy.Infrastructure.pdb
 C:\Users\pc1\Documents\menufy\backend\src\Menufy.Infrastructure\obj\Debug\net8.0\Menufy.Infrastructure.genruntimeconfig.cache
 C:\Users\pc1\Documents\menufy\backend\src\Menufy.Infrastructure\obj\Debug\net8.0\ref\Menufy.Infrastructure.dll
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Infrastructure\obj\Debug\net8.0\Menufy.Infrastructure.sourcelink.json

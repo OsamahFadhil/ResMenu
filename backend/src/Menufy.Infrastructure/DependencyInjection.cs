@@ -19,6 +19,8 @@ public static class DependencyInjection
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IQRCodeService, QRCodeService>();
+        services.AddScoped<IFileStorageService, FileStorageService>();
+        services.AddScoped<IEmailService, EmailService>();
 
         return services;
     }

@@ -11,8 +11,26 @@ services:
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - menufy-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache (Optional)
+  redis:
+    image: redis:7-alpine
+    container_name: menufy-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - menufy-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -26,15 +44,27 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5000
-      - ConnectionStrings__DefaultConnection=Host=host.docker.internal;Port=5432;Database=menufy;Username=postgres;Password=1159800
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=menufy;Username=postgres;Password=postgres
+      - ConnectionStrings__Redis=redis:6379
       - JwtSettings__Secret=YourSuperSecretKeyThatIsAtLeast32CharactersLong!
       - JwtSettings__Issuer=MenufyAPI
       - JwtSettings__Audience=MenufyClient
+      - JwtSettings__ExpirationMinutes=60
+      - JwtSettings__RefreshTokenExpirationDays=7
       - AppSettings__BaseUrl=http://localhost:3000
+      - AppSettings__MaxUploadSizeMB=10
+      - EmailSettings__FromEmail=noreply@menufy.com
+      - EmailSettings__FromName=Menufy
     ports:
       - "5000:5000"
+    volumes:
+      - ./backend/uploads:/app/uploads
+    networks:
+      - menufy-network
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     restart: unless-stopped
 
@@ -46,8 +76,11 @@ services:
     container_name: menufy-frontend
     environment:
       - NUXT_PUBLIC_API_BASE=http://localhost:5000/api
+      - NODE_ENV=production
     ports:
       - "3000:3000"
+    networks:
+      - menufy-network
     depends_on:
       - api
     restart: unless-stopped
@@ -57,17 +90,28 @@ services:
     image: dpage/pgadmin4:latest
     container_name: menufy-pgadmin
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@menufy.com
+      PGADMIN_DEFAULT_EMAIL:  
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - menufy-network
     depends_on:
       - db
     restart: unless-stopped
+    profiles:
+      - tools
 
 volumes:
   postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  pgadmin_data:
+    driver: local
 
 networks:
-  default:
-    name: menufy-network
+  menufy-network:
+    driver: bridge

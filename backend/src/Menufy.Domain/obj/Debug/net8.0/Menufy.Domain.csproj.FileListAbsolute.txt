@@ -9,3 +9,4 @@ C:\Users\pc1\Documents\menufy\backend\src\Menufy.Domain\obj\Debug\net8.0\Menufy.
 C:\Users\pc1\Documents\menufy\backend\src\Menufy.Domain\obj\Debug\net8.0\refint\Menufy.Domain.dll
 C:\Users\pc1\Documents\menufy\backend\src\Menufy.Domain\obj\Debug\net8.0\Menufy.Domain.pdb
 C:\Users\pc1\Documents\menufy\backend\src\Menufy.Domain\obj\Debug\net8.0\ref\Menufy.Domain.dll
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.Domain\obj\Debug\net8.0\Menufy.Domain.sourcelink.json

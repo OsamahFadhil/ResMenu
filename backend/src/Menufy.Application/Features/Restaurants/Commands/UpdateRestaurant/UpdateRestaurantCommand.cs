@@ -1,7 +1,16 @@
 using MediatR;
 using Menufy.Application.Common.Models;
-using Menufy.Application.Features.Restaurants.DTOs;
 
 namespace Menufy.Application.Features.Restaurants.Commands.UpdateRestaurant;
 
-public record UpdateRestaurantCommand(Guid RestaurantId, Guid UserId, UpdateRestaurantDto Dto) : IRequest<Result<RestaurantDto>>;
+public class UpdateRestaurantCommand : IRequest<Result>
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string? LogoUrl { get; set; }
+    public string? ContactPhone { get; set; }
+    public string? ContactEmail { get; set; }
+    public string? Address { get; set; }
+    public string? Translations { get; set; }
+    public bool IsActive { get; set; }
+}

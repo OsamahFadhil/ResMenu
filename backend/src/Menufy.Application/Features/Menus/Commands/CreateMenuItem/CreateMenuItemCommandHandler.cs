@@ -4,6 +4,9 @@ using Menufy.Application.Common.Models;
 using Menufy.Application.Features.Menus.DTOs;
 using Menufy.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 
 namespace Menufy.Application.Features.Menus.Commands.CreateMenuItem;
 
@@ -31,6 +34,7 @@ public class CreateMenuItemCommandHandler : IRequestHandler<CreateMenuItemComman
             Id = Guid.NewGuid(),
             Name = request.Dto.Name,
             Description = request.Dto.Description,
+            Translations = SerializeMenuItemTranslations(request.Dto.Translations),
             Price = request.Dto.Price,
             ImageUrl = request.Dto.ImageUrl,
             IsAvailable = request.Dto.IsAvailable,
@@ -46,13 +50,34 @@ public class CreateMenuItemCommandHandler : IRequestHandler<CreateMenuItemComman
         {
             Id = menuItem.Id,
             Name = menuItem.Name,
+            LocalizedName = menuItem.Name,
             Description = menuItem.Description,
+            LocalizedDescription = menuItem.Description,
             Price = menuItem.Price,
             ImageUrl = menuItem.ImageUrl,
             IsAvailable = menuItem.IsAvailable,
-            DisplayOrder = menuItem.DisplayOrder
+            DisplayOrder = menuItem.DisplayOrder,
+            Translations = request.Dto.Translations
         };
 
         return Result<MenuItemDto>.SuccessResult(dto, "Menu item created successfully");
+    }
+
+    private static string? SerializeMenuItemTranslations(Dictionary<string, MenuItemTranslationDto>? translations)
+    {
+        if (translations == null || translations.Count == 0)
+        {
+            return null;
+        }
+
+        var payload = translations.ToDictionary(
+            kvp => kvp.Key,
+            kvp => new Dictionary<string, string?>
+            {
+                ["name"] = kvp.Value.Name,
+                ["description"] = kvp.Value.Description
+            });
+
+        return JsonSerializer.Serialize(payload);
     }
 }

@@ -40,6 +40,17 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<AuthResp
         var token = _jwtTokenService.GenerateToken(user);
         var refreshToken = _jwtTokenService.GenerateRefreshToken();
 
+        // Save refresh token to database
+        var refreshTokenEntity = new Domain.Entities.RefreshToken
+        {
+            Token = refreshToken,
+            UserId = user.Id,
+            ExpiresAt = DateTime.UtcNow.AddDays(7)
+        };
+
+        _context.RefreshTokens.Add(refreshTokenEntity);
+        await _context.SaveChangesAsync(cancellationToken);
+
         var response = new AuthResponseDto
         {
             Token = token,

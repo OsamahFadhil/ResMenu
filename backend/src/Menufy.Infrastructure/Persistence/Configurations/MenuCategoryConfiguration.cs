@@ -16,6 +16,9 @@ public class MenuCategoryConfiguration : IEntityTypeConfiguration<MenuCategory>
             .IsRequired()
             .HasMaxLength(100);
 
+        builder.Property(c => c.Translations)
+            .HasColumnType("jsonb");
+
         builder.Property(c => c.DisplayOrder)
             .IsRequired();
 

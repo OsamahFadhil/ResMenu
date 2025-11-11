@@ -4,5 +4,5 @@ using Menufy.Application.Features.Menus.DTOs;
 
 namespace Menufy.Application.Features.Menus.Queries.GetRestaurantCategories;
 
-public record GetRestaurantCategoriesQuery(Guid RestaurantId) : IRequest<Result<List<MenuCategoryDto>>>;
+public record GetRestaurantCategoriesQuery(Guid RestaurantId, string? Language = null) : IRequest<Result<List<MenuCategoryDto>>>;
 

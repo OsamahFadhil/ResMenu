@@ -33,7 +33,7 @@ public class GetRestaurantCategoriesQueryHandler : IRequestHandler<GetRestaurant
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        var categoryDtos = MenuCategoryTreeBuilder.BuildTree(categories);
+        var categoryDtos = MenuCategoryTreeBuilder.BuildTree(categories, request.Language);
 
         return Result<List<MenuCategoryDto>>.SuccessResult(categoryDtos, "Categories retrieved successfully");
     }

@@ -9,7 +9,9 @@ public interface IApplicationDbContext
     DbSet<Restaurant> Restaurants { get; }
     DbSet<MenuCategory> MenuCategories { get; }
     DbSet<MenuItem> MenuItems { get; }
+    DbSet<MenuTemplate> MenuTemplates { get; }
     DbSet<QRCode> QRCodes { get; }
+    DbSet<RefreshToken> RefreshTokens { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

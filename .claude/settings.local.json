@@ -1,9 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(docker-compose down:*)",
-      "Bash(docker-compose up:*)",
-      "Bash(docker system prune:*)"
+      "Bash(powershell:*)",
+      "Bash(npm install:*)",
+      "Bash(docker-compose build:*)"
     ],
     "deny": [],
     "ask": []
