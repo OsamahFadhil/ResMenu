@@ -144,6 +144,9 @@ namespace Menufy.Infrastructure.Migrations
                     b.Property<bool>("IsPublished")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTime?>("LastUsedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -164,6 +167,9 @@ namespace Menufy.Infrastructure.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UsageCount")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -260,6 +266,9 @@ namespace Menufy.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("ActiveTemplateId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Address")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
@@ -275,6 +284,21 @@ namespace Menufy.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Currency")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasDefaultValue("USD");
+
+                    b.Property<string>("CustomTheme")
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("DefaultLanguage")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasDefaultValue("en");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -286,9 +310,15 @@ namespace Menufy.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTime?>("LastMenuUpdate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("LogoUrl")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
+
+                    b.Property<string>("MenuDisplaySettings")
+                        .HasColumnType("jsonb");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -303,6 +333,11 @@ namespace Menufy.Infrastructure.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)");
 
+                    b.Property<int>("TotalMenuViews")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
                     b.Property<string>("Translations")
                         .HasColumnType("jsonb");
 
@@ -310,6 +345,8 @@ namespace Menufy.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ActiveTemplateId");
 
                     b.HasIndex("OwnerId");
 
@@ -442,11 +479,18 @@ namespace Menufy.Infrastructure.Migrations
 
             modelBuilder.Entity("Menufy.Domain.Entities.Restaurant", b =>
                 {
+                    b.HasOne("Menufy.Domain.Entities.MenuTemplate", "ActiveTemplate")
+                        .WithMany()
+                        .HasForeignKey("ActiveTemplateId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Menufy.Domain.Entities.User", "Owner")
                         .WithMany("Restaurants")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ActiveTemplate");
 
                     b.Navigation("Owner");
                 });

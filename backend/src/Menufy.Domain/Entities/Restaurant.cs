@@ -15,11 +15,23 @@ public class Restaurant : BaseEntity
     public Guid OwnerId { get; set; }
     public bool IsActive { get; set; } = true;
 
+    // Menu Configuration
+    public Guid? ActiveTemplateId { get; set; }
+    public string? CustomTheme { get; set; } // JSON: MenuTemplateThemeDto
+    public string? MenuDisplaySettings { get; set; } // JSON: MenuDisplaySettingsDto
+    public string? Currency { get; set; } = "USD";
+    public string? DefaultLanguage { get; set; } = "en";
+
+    // Analytics
+    public int TotalMenuViews { get; set; } = 0;
+    public DateTime? LastMenuUpdate { get; set; }
+
     // Navigation properties
     public User Owner { get; set; } = null!;
     public ICollection<MenuCategory> MenuCategories { get; set; } = new List<MenuCategory>();
     public QRCode? QRCode { get; set; }
     public ICollection<MenuTemplate> MenuTemplates { get; set; } = new List<MenuTemplate>();
+    public MenuTemplate? ActiveTemplate { get; set; }
 
     // Helper methods to get translated content
     public string GetTranslatedName(string language = "en")

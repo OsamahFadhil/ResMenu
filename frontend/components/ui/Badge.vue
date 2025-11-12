@@ -21,11 +21,11 @@ const baseClasses = 'inline-flex items-center font-medium'
 
 const variantClasses = computed(() => {
   const variants = {
-    primary: 'bg-indigo-100 text-indigo-800',
-    secondary: 'bg-gray-100 text-gray-800',
+    primary: 'bg-primary-100 text-primary-800',
+    secondary: 'bg-neutral-100 text-neutral-800',
     success: 'bg-green-100 text-green-800',
     danger: 'bg-red-100 text-red-800',
-    warning: 'bg-yellow-100 text-yellow-800',
+    warning: 'bg-accent-100 text-accent-800',
     info: 'bg-blue-100 text-blue-800'
   }
   return variants[props.variant]
@@ -33,15 +33,15 @@ const variantClasses = computed(() => {
 
 const sizeClasses = computed(() => {
   const sizes = {
-    sm: 'px-2 py-0.5 text-xs',
-    md: 'px-2.5 py-0.5 text-sm',
-    lg: 'px-3 py-1 text-base'
+    sm: 'px-2.5 py-0.5 text-xs',
+    md: 'px-3 py-1 text-sm',
+    lg: 'px-3.5 py-1.5 text-base'
   }
   return sizes[props.size]
 })
 
 const roundedClasses = computed(() => {
-  return props.rounded ? 'rounded-full' : 'rounded'
+  return props.rounded ? 'rounded-full' : 'rounded-lg'
 })
 
 const badgeClasses = computed(() => {

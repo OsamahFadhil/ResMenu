@@ -41,6 +41,25 @@ public class RestaurantConfiguration : IEntityTypeConfiguration<Restaurant>
         builder.Property(r => r.IsActive)
             .HasDefaultValue(true);
 
+        // Menu Configuration
+        builder.Property(r => r.CustomTheme)
+            .HasColumnType("jsonb");
+
+        builder.Property(r => r.MenuDisplaySettings)
+            .HasColumnType("jsonb");
+
+        builder.Property(r => r.Currency)
+            .HasMaxLength(10)
+            .HasDefaultValue("USD");
+
+        builder.Property(r => r.DefaultLanguage)
+            .HasMaxLength(10)
+            .HasDefaultValue("en");
+
+        builder.Property(r => r.TotalMenuViews)
+            .HasDefaultValue(0);
+
+        // Relationships
         builder.HasMany(r => r.MenuCategories)
             .WithOne(c => c.Restaurant)
             .HasForeignKey(c => c.RestaurantId)
@@ -50,5 +69,10 @@ public class RestaurantConfiguration : IEntityTypeConfiguration<Restaurant>
             .WithOne(q => q.Restaurant)
             .HasForeignKey<QRCode>(q => q.RestaurantId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(r => r.ActiveTemplate)
+            .WithMany()
+            .HasForeignKey(r => r.ActiveTemplateId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

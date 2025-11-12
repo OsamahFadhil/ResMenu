@@ -2,12 +2,36 @@ import { defineStore } from 'pinia'
 import { useApi } from '../composables/useApi'
 
 export interface TemplateTheme {
+  // Colors
   primaryColor: string
   accentColor: string
   backgroundColor: string
   surfaceColor: string
   textColor: string
+  
+  // Typography
   fontFamily: string
+  headingFont?: string
+  bodyFont?: string
+  fontSize?: 'small' | 'medium' | 'large'
+  
+  // Layout
+  layout?: 'grid' | 'list' | 'cards'
+  cardStyle?: 'modern' | 'classic' | 'minimal'
+  borderRadius?: 'none' | 'small' | 'medium' | 'large'
+  
+  // Spacing
+  spacing?: 'compact' | 'normal' | 'relaxed'
+  
+  // Images
+  showImages?: boolean
+  imageSize?: 'small' | 'medium' | 'large'
+  imageShape?: 'square' | 'rounded' | 'circle'
+  
+  // Branding
+  logoPosition?: 'left' | 'center' | 'right'
+  showRestaurantInfo?: boolean
+  headerStyle?: 'simple' | 'banner' | 'overlay'
 }
 
 export interface TemplateItem {
@@ -60,12 +84,34 @@ export interface UpsertTemplatePayload {
 }
 
 export const createDefaultTheme = (): TemplateTheme => ({
-  primaryColor: '#f97316',
-  accentColor: '#facc15',
-  backgroundColor: '#fff7ed',
+  // Colors
+  primaryColor: '#dc2626',
+  accentColor: '#f59e0b',
+  backgroundColor: '#fafaf9',
   surfaceColor: '#ffffff',
-  textColor: '#1f2937',
-  fontFamily: 'Inter'
+  textColor: '#292524',
+  
+  // Typography
+  fontFamily: 'Inter',
+  fontSize: 'medium',
+  
+  // Layout
+  layout: 'list',
+  cardStyle: 'modern',
+  borderRadius: 'medium',
+  
+  // Spacing
+  spacing: 'normal',
+  
+  // Images
+  showImages: true,
+  imageSize: 'medium',
+  imageShape: 'rounded',
+  
+  // Branding
+  logoPosition: 'left',
+  showRestaurantInfo: true,
+  headerStyle: 'simple',
 })
 
 export const createEmptyStructure = (): TemplateStructure => ({
@@ -144,16 +190,30 @@ export const useTemplateStore = defineStore('templates', {
     },
 
     async createTemplate(payload: UpsertTemplatePayload) {
+      console.log('=== STORE: createTemplate called ===')
+      console.log('Payload:', payload)
+      
       const api = useApi()
-      const response = await api.post('/menu-templates', payload)
+      console.log('Making POST request to /menu-templates')
+      
+      try {
+        const response = await api.post('/menu-templates', payload)
+        console.log('Response received:', response.data)
 
-      if (response.data.success) {
-        const created: MenuTemplate = response.data.data
-        this.templates = [created, ...this.templates]
-        return created
+        if (response.data.success) {
+          const created: MenuTemplate = response.data.data
+          this.templates = [created, ...this.templates]
+          console.log('Template added to store:', created)
+          return created
+        }
+
+        throw new Error(response.data.message || 'Failed to create template')
+      } catch (error: any) {
+        console.error('=== STORE: createTemplate ERROR ===')
+        console.error('Error:', error)
+        console.error('Response:', error.response?.data)
+        throw error
       }
-
-      throw new Error(response.data.message || 'Failed to create template')
     },
 
     async updateTemplate(id: string, payload: UpsertTemplatePayload) {

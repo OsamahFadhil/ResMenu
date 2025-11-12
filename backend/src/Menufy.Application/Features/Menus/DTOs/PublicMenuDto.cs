@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Menufy.Application.Features.MenuTemplates.DTOs;
+using Menufy.Application.Features.Restaurants.DTOs;
 
 namespace Menufy.Application.Features.Menus.DTOs;
 
@@ -13,5 +15,11 @@ public class PublicMenuDto
     public string? ContactEmail { get; set; }
     public string? Address { get; set; }
     public string Language { get; set; } = "en";
+    
+    // Theme & Settings
+    public MenuTemplateThemeDto? Theme { get; set; }
+    public MenuDisplaySettingsDto? DisplaySettings { get; set; }
+    public string Currency { get; set; } = "USD";
+    
     public List<MenuCategoryDto> Categories { get; set; } = new();
 }

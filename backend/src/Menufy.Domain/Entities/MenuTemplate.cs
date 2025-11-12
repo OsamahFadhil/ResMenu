@@ -12,6 +12,10 @@ public class MenuTemplate : BaseEntity
     public string? Tags { get; set; }
     public bool IsPublished { get; set; }
 
+    // Usage Tracking
+    public int UsageCount { get; set; } = 0;
+    public DateTime? LastUsedAt { get; set; }
+
     public Restaurant? Restaurant { get; set; }
 }
 

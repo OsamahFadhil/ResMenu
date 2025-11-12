@@ -74,6 +74,9 @@ interface PublicMenu {
   contactEmail?: string;
   address?: string;
   language: string;
+  theme?: any;  // MenuTemplateThemeDto
+  displaySettings?: any;  // MenuDisplaySettingsDto
+  currency?: string;
   categories: MenuCategory[];
 }
 
@@ -191,9 +194,15 @@ export const useRestaurantStore = defineStore('restaurant', {
           restaurantLocalizedName:
             response.data.data?.restaurantLocalizedName ?? response.data.data?.restaurantName,
           language: response.data.data?.language ?? language ?? 'en',
+          theme: response.data.data?.theme ?? null,
+          displaySettings: response.data.data?.displaySettings ?? null,
+          currency: response.data.data?.currency ?? 'USD',
           categories: normalizeCategoryTree(response.data.data?.categories ?? []),
         } as PublicMenu;
         this.publicMenu = normalizedMenu;
+        console.log('=== STORE: Normalized Public Menu ===');
+        console.log('Theme:', normalizedMenu.theme);
+        console.log('Display Settings:', normalizedMenu.displaySettings);
         return normalizedMenu;
       }
 

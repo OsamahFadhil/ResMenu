@@ -255,3 +255,4 @@ C:\Users\aliha\RiderProjects\ResMenu\backend\src\Menufy.API\obj\Debug\net8.0\Men
 C:\Users\aliha\RiderProjects\ResMenu\backend\src\Menufy.API\obj\Debug\net8.0\Menufy.API.genruntimeconfig.cache
 C:\Users\aliha\RiderProjects\ResMenu\backend\src\Menufy.API\obj\Debug\net8.0\ref\Menufy.API.dll
 C:\Users\aliha\RiderProjects\ResMenu\backend\src\Menufy.API\bin\Debug\net8.0\Menufy.API.staticwebassets.runtime.json
+C:\Users\pc1\Documents\menufy\backend\src\Menufy.API\bin\Debug\net8.0\Menufy.API.staticwebassets.runtime.json

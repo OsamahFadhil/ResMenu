@@ -18,7 +18,7 @@
 <script setup lang="ts">
 interface Props {
   type?: 'button' | 'submit' | 'reset'
-  variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'ghost'
+  variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'ghost' | 'accent'
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
   disabled?: boolean
   loading?: boolean
@@ -38,27 +38,28 @@ const emit = defineEmits<{
   (e: 'click', event: MouseEvent): void
 }>()
 
-const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
+const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
 
 const variantClasses = computed(() => {
   const variants = {
-    primary: 'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500',
-    secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500',
-    success: 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500',
-    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
-    warning: 'bg-yellow-500 text-white hover:bg-yellow-600 focus:ring-yellow-500',
-    ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 focus:ring-gray-500'
+    primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 shadow-md hover:shadow-lg active:scale-[0.98]',
+    secondary: 'bg-white text-neutral-700 border border-neutral-300 hover:bg-neutral-50 focus:ring-neutral-500 shadow-sm hover:shadow-md active:scale-[0.98]',
+    success: 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 shadow-md hover:shadow-lg active:scale-[0.98]',
+    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-md hover:shadow-lg active:scale-[0.98]',
+    warning: 'bg-accent-500 text-white hover:bg-accent-600 focus:ring-accent-500 shadow-md hover:shadow-lg active:scale-[0.98]',
+    accent: 'bg-accent-500 text-white hover:bg-accent-600 focus:ring-accent-500 shadow-md hover:shadow-lg active:scale-[0.98]',
+    ghost: 'bg-transparent text-neutral-700 hover:bg-neutral-100 focus:ring-neutral-500 active:scale-[0.98]'
   }
   return variants[props.variant]
 })
 
 const sizeClasses = computed(() => {
   const sizes = {
-    xs: 'px-2.5 py-1.5 text-xs',
-    sm: 'px-3 py-2 text-sm',
-    md: 'px-4 py-2 text-sm',
-    lg: 'px-4 py-2 text-base',
-    xl: 'px-6 py-3 text-base'
+    xs: 'px-3 py-1.5 text-xs gap-1.5',
+    sm: 'px-4 py-2 text-sm gap-2',
+    md: 'px-5 py-2.5 text-sm gap-2',
+    lg: 'px-6 py-3 text-base gap-2.5',
+    xl: 'px-8 py-3.5 text-base gap-3'
   }
   return sizes[props.size]
 })

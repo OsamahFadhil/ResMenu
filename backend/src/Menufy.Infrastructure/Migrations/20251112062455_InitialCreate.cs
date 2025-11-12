@@ -60,36 +60,6 @@ namespace Menufy.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Restaurants",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Slug = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false),
-                    LogoUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    ContactPhone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
-                    ContactEmail = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    Address = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    Translations = table.Column<string>(type: "jsonb", nullable: true),
-                    OwnerId = table.Column<Guid>(type: "uuid", nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Restaurants", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Restaurants_Users_OwnerId",
-                        column: x => x.OwnerId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "MenuCategories",
                 columns: table => new
                 {
@@ -111,36 +81,6 @@ namespace Menufy.Infrastructure.Migrations
                         name: "FK_MenuCategories_MenuCategories_ParentCategoryId",
                         column: x => x.ParentCategoryId,
                         principalTable: "MenuCategories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_MenuCategories_Restaurants_RestaurantId",
-                        column: x => x.RestaurantId,
-                        principalTable: "Restaurants",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "QRCodes",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ImageUrl = table.Column<string>(type: "text", nullable: false),
-                    Link = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    RestaurantId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_QRCodes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_QRCodes_Restaurants_RestaurantId",
-                        column: x => x.RestaurantId,
-                        principalTable: "Restaurants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -174,6 +114,97 @@ namespace Menufy.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "MenuTemplates",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    RestaurantId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Structure = table.Column<string>(type: "jsonb", nullable: false),
+                    Theme = table.Column<string>(type: "jsonb", nullable: true),
+                    Tags = table.Column<string>(type: "jsonb", nullable: true),
+                    IsPublished = table.Column<bool>(type: "boolean", nullable: false),
+                    UsageCount = table.Column<int>(type: "integer", nullable: false),
+                    LastUsedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MenuTemplates", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Restaurants",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Slug = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false),
+                    LogoUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    ContactPhone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    ContactEmail = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    Address = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    Translations = table.Column<string>(type: "jsonb", nullable: true),
+                    OwnerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    ActiveTemplateId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CustomTheme = table.Column<string>(type: "jsonb", nullable: true),
+                    MenuDisplaySettings = table.Column<string>(type: "jsonb", nullable: true),
+                    Currency = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true, defaultValue: "USD"),
+                    DefaultLanguage = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true, defaultValue: "en"),
+                    TotalMenuViews = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    LastMenuUpdate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Restaurants", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Restaurants_MenuTemplates_ActiveTemplateId",
+                        column: x => x.ActiveTemplateId,
+                        principalTable: "MenuTemplates",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Restaurants_Users_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "QRCodes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ImageUrl = table.Column<string>(type: "text", nullable: false),
+                    Link = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    RestaurantId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_QRCodes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_QRCodes_Restaurants_RestaurantId",
+                        column: x => x.RestaurantId,
+                        principalTable: "Restaurants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_MenuCategories_ParentCategoryId",
                 table: "MenuCategories",
@@ -188,6 +219,12 @@ namespace Menufy.Infrastructure.Migrations
                 name: "IX_MenuItems_CategoryId",
                 table: "MenuItems",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MenuTemplates_RestaurantId_Name",
+                table: "MenuTemplates",
+                columns: new[] { "RestaurantId", "Name" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_QRCodes_RestaurantId",
@@ -206,6 +243,11 @@ namespace Menufy.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Restaurants_ActiveTemplateId",
+                table: "Restaurants",
+                column: "ActiveTemplateId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Restaurants_OwnerId",
                 table: "Restaurants",
                 column: "OwnerId");
@@ -221,11 +263,31 @@ namespace Menufy.Infrastructure.Migrations
                 table: "Users",
                 column: "Email",
                 unique: true);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_MenuCategories_Restaurants_RestaurantId",
+                table: "MenuCategories",
+                column: "RestaurantId",
+                principalTable: "Restaurants",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_MenuTemplates_Restaurants_RestaurantId",
+                table: "MenuTemplates",
+                column: "RestaurantId",
+                principalTable: "Restaurants",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_MenuTemplates_Restaurants_RestaurantId",
+                table: "MenuTemplates");
+
             migrationBuilder.DropTable(
                 name: "MenuItems");
 
@@ -240,6 +302,9 @@ namespace Menufy.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Restaurants");
+
+            migrationBuilder.DropTable(
+                name: "MenuTemplates");
 
             migrationBuilder.DropTable(
                 name: "Users");

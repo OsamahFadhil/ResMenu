@@ -135,35 +135,15 @@
           ></textarea>
         </div>
 
-        <!-- Theme Colors -->
-        <div>
-          <h3 class="text-sm font-semibold text-gray-900 mb-3">Theme Colors</h3>
-          <div class="grid grid-cols-3 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-600 mb-1">Primary</label>
-              <input
-                v-model="form.theme.primaryColor"
-                type="color"
-                class="w-full h-10 rounded-lg cursor-pointer"
-              />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-600 mb-1">Accent</label>
-              <input
-                v-model="form.theme.accentColor"
-                type="color"
-                class="w-full h-10 rounded-lg cursor-pointer"
-              />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-600 mb-1">Background</label>
-              <input
-                v-model="form.theme.backgroundColor"
-                type="color"
-                class="w-full h-10 rounded-lg cursor-pointer"
-              />
-            </div>
-          </div>
+        <!-- Theme Customization -->
+        <div class="space-y-6 border-t pt-6">
+          <h3 class="text-lg font-semibold text-neutral-900">Theme Customization</h3>
+          
+          <!-- Theme Customizer Component -->
+          <ThemeCustomizer v-model="form.theme" />
+          
+          <!-- Layout Customizer Component -->
+          <LayoutCustomizer v-model="form.theme" />
         </div>
 
         <!-- Categories -->
@@ -299,6 +279,8 @@
 
 <script setup lang="ts">
 import { useTemplateStore, type MenuTemplate, type UpsertTemplatePayload, createDefaultTheme } from '@/stores/templates'
+import ThemeCustomizer from '~/components/menu/ThemeCustomizer.vue'
+import LayoutCustomizer from '~/components/menu/LayoutCustomizer.vue'
 
 definePageMeta({
   layout: false,
@@ -334,8 +316,10 @@ const countItems = (template: MenuTemplate) => {
 }
 
 const openCreateModal = () => {
+  console.log('=== OPENING CREATE MODAL ===')
   editingTemplate.value = null
   form.value = createBlankForm()
+  console.log('Initial form:', form.value)
   showModal.value = true
 }
 
@@ -385,6 +369,9 @@ const removeItem = (categoryIndex: number, itemIndex: number) => {
 }
 
 const saveTemplate = async () => {
+  console.log('=== SAVE TEMPLATE CALLED ===')
+  console.log('Form data:', JSON.stringify(form.value, null, 2))
+  
   if (!form.value.name.trim()) {
     alert('Please enter a template name')
     return
@@ -396,20 +383,28 @@ const saveTemplate = async () => {
   }
 
   saving.value = true
+  console.log('Starting save process...')
+  
   try {
     if (editingTemplate.value) {
+      console.log('Updating template:', editingTemplate.value.id)
       await templateStore.updateTemplate(editingTemplate.value.id, form.value)
       alert('Template updated successfully!')
     } else {
-      await templateStore.createTemplate(form.value)
+      console.log('Creating new template...')
+      const result = await templateStore.createTemplate(form.value)
+      console.log('Template created:', result)
       alert('Template created successfully!')
     }
     showModal.value = false
+    form.value = createBlankForm()
   } catch (error: any) {
     console.error('Failed to save template:', error)
+    console.error('Error details:', error.response?.data || error.message)
     alert(error.message || 'Failed to save template')
   } finally {
     saving.value = false
+    console.log('=== SAVE TEMPLATE FINISHED ===')
   }
 }
 

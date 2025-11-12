@@ -1,18 +1,18 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 text-slate-700">
+  <div class="min-h-screen bg-neutral-50 text-neutral-800">
     <!-- Sidebar -->
     <aside
-      class="fixed inset-y-0 z-40 w-72 bg-white/80 backdrop-blur border-orange-100 shadow-lg transition-transform duration-300 ease-in-out md:translate-x-0"
+      class="fixed inset-y-0 z-40 w-72 bg-white border-r border-neutral-200 shadow-soft transition-transform duration-300 ease-in-out md:translate-x-0"
       :class="sidebarClasses"
     >
-      <div class="flex items-center justify-between px-6 py-5 border-b border-orange-100">
+      <div class="flex items-center justify-between px-6 py-6 border-b border-neutral-200">
         <div>
-          <p class="text-xs uppercase tracking-[0.3em] text-orange-400">{{ $t('common.appName') }}</p>
-          <h1 class="text-xl font-semibold text-slate-800">{{ restaurantName }}</h1>
+          <p class="text-xs uppercase tracking-widest text-primary-600 font-semibold">{{ $t('common.appName') }}</p>
+          <h1 class="text-xl font-bold text-neutral-900 mt-1">{{ restaurantName }}</h1>
         </div>
         <button
           @click="toggleSidebar"
-          class="rounded-full p-2 text-orange-400 hover:bg-orange-100 md:hidden"
+          class="rounded-lg p-2 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 transition-colors md:hidden"
         >
           <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -20,7 +20,7 @@
         </button>
       </div>
 
-      <nav class="mt-6 space-y-2 px-4">
+      <nav class="mt-6 space-y-1 px-4">
         <NuxtLink
           v-for="item in navigation"
           :key="item.name"
@@ -30,19 +30,19 @@
           <div
             :class="iconClass(item.href)"
           >
-            <component :is="item.icon" class="h-4 w-4" />
+            <component :is="item.icon" class="h-5 w-5" />
           </div>
           <span>{{ item.name }}</span>
         </NuxtLink>
       </nav>
 
       <div class="mt-auto px-4 pb-6 pt-8">
-        <div class="rounded-2xl border border-orange-100 bg-orange-50/80 p-4 text-sm">
-          <p class="font-semibold text-slate-800">{{ authStore.user?.name }}</p>
-          <p class="text-xs text-orange-500 uppercase tracking-wide">{{ authStore.user?.role }}</p>
+        <div class="rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-sm">
+          <p class="font-semibold text-neutral-900">{{ authStore.user?.name }}</p>
+          <p class="text-xs text-primary-600 uppercase tracking-wide mt-1">{{ authStore.user?.role }}</p>
           <button
             @click="handleLogout"
-            class="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-slate-800 transition"
+            class="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white shadow-md hover:bg-primary-700 hover:shadow-lg transition-all duration-200 active:scale-[0.98]"
           >
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -56,7 +56,7 @@
     <!-- Mobile backdrop -->
     <div
       v-if="sidebarOpen"
-      class="fixed inset-0 z-30 bg-slate-900/40 md:hidden"
+      class="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm md:hidden"
       @click="toggleSidebar"
     ></div>
 
@@ -73,16 +73,16 @@
             </svg>
           </button>
           <div :class="headerTextClasses">
-            <p class="text-xs uppercase tracking-widest text-orange-400">{{ pageTitle }}</p>
-            <h2 class="text-lg font-semibold text-slate-800">{{ pageSubtitle }}</h2>
+            <p class="text-xs uppercase tracking-widest text-primary-600 font-semibold">{{ pageTitle }}</p>
+            <h2 class="text-lg font-semibold text-neutral-900">{{ pageSubtitle }}</h2>
           </div>
         </div>
 
         <div class="flex items-center gap-4">
           <LanguageSwitcher />
-          <div class="hidden sm:flex items-center gap-2 rounded-xl border border-orange-100 bg-white px-3 py-2 text-sm shadow-sm">
-            <span class="font-medium text-slate-700">{{ $t('common.welcome') }}</span>
-            <span class="text-orange-500">{{ authStore.user?.name }}</span>
+          <div class="hidden sm:flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-4 py-2 text-sm shadow-sm">
+            <span class="font-medium text-neutral-700">{{ $t('common.welcome') }}</span>
+            <span class="text-primary-600 font-semibold">{{ authStore.user?.name }}</span>
           </div>
         </div>
       </header>
@@ -152,6 +152,15 @@ const navigation = computed(() => [
       ])
   },
   {
+    name: 'Settings',
+    href: '/dashboard/settings',
+    icon: () =>
+      h('svg', { class: 'h-4 w-4', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
+        h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' }),
+        h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M15 12a3 3 0 11-6 0 3 3 0 016 0z' })
+      ])
+  },
+  {
     name: t('navigation.qrcodes'),
     href: '/dashboard/qrcodes',
     icon: () =>
@@ -162,17 +171,17 @@ const navigation = computed(() => [
 ])
 
 const navClass = (href: string) => [
-  'group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all',
+  'group flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200',
   route.path === href
-    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-md'
-    : 'text-slate-600 hover:bg-orange-100 hover:text-orange-600'
+    ? 'bg-primary-600 text-white shadow-md'
+    : 'text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900'
 ]
 
 const iconClass = (href: string) => [
-  'flex h-9 w-9 items-center justify-center rounded-lg border transition',
+  'flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-200',
   route.path === href
-    ? 'border-white bg-white text-orange-500'
-    : 'border-transparent bg-orange-100 text-orange-500 group-hover:bg-white group-hover:border-orange-200'
+    ? 'bg-white text-primary-600'
+    : 'bg-neutral-100 text-neutral-600 group-hover:bg-neutral-200'
 ]
 
 const pageTitle = computed(() => {
@@ -211,12 +220,12 @@ const mainContainerClasses = computed(() => [
 ])
 
 const headerClasses = computed(() => [
-  'sticky top-0 z-20 flex h-20 items-center justify-between border-b border-orange-100 bg-white/70 px-6 backdrop-blur',
+  'sticky top-0 z-20 flex h-20 items-center justify-between border-b border-neutral-200 bg-white/90 px-6 backdrop-blur-sm shadow-sm',
   isRtl.value ? 'flex-row-reverse' : 'flex-row'
 ])
 
 const headerLeftClasses = computed(() => [
-  'flex items-center gap-3',
+  'flex items-center gap-4',
   isRtl.value ? 'flex-row-reverse' : 'flex-row'
 ])
 
@@ -226,7 +235,7 @@ const headerTextClasses = computed(() => [
 ])
 
 const menuButtonClasses = computed(() => [
-  'rounded-xl border border-orange-200 bg-white p-2 text-orange-400 shadow-sm md:hidden',
+  'rounded-lg border border-neutral-300 bg-white p-2 text-neutral-600 shadow-sm hover:bg-neutral-50 transition-colors md:hidden',
   isRtl.value ? 'ml-3' : 'mr-3'
 ])
 

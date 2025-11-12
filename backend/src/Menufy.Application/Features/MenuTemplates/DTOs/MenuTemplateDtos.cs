@@ -31,12 +31,36 @@ public class UpsertMenuTemplateDto
 
 public class MenuTemplateThemeDto
 {
-    public string PrimaryColor { get; set; } = "#f97316";
-    public string AccentColor { get; set; } = "#facc15";
-    public string BackgroundColor { get; set; } = "#fff7ed";
+    // Colors
+    public string PrimaryColor { get; set; } = "#dc2626";
+    public string AccentColor { get; set; } = "#f59e0b";
+    public string BackgroundColor { get; set; } = "#fafaf9";
     public string SurfaceColor { get; set; } = "#ffffff";
-    public string TextColor { get; set; } = "#1f2937";
+    public string TextColor { get; set; } = "#292524";
+
+    // Typography
     public string FontFamily { get; set; } = "Inter";
+    public string? HeadingFont { get; set; }
+    public string? BodyFont { get; set; }
+    public string FontSize { get; set; } = "medium"; // small, medium, large
+
+    // Layout
+    public string Layout { get; set; } = "list"; // list, grid, cards
+    public string CardStyle { get; set; } = "modern"; // modern, classic, minimal
+    public string BorderRadius { get; set; } = "medium"; // none, small, medium, large
+
+    // Spacing
+    public string Spacing { get; set; } = "normal"; // compact, normal, relaxed
+
+    // Images
+    public bool ShowImages { get; set; } = true;
+    public string ImageSize { get; set; } = "medium"; // small, medium, large
+    public string ImageShape { get; set; } = "rounded"; // square, rounded, circle
+
+    // Branding
+    public string LogoPosition { get; set; } = "left"; // left, center, right
+    public bool ShowRestaurantInfo { get; set; } = true;
+    public string HeaderStyle { get; set; } = "simple"; // simple, banner, overlay
 }
 
 public class MenuTemplateStructureDto

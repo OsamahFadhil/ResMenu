@@ -3,26 +3,26 @@
     <div class="space-y-6">
       <!-- Header with Search -->
       <div class="flex flex-col gap-4 justify-between items-start sm:flex-row sm:items-center">
-        <h1 class="text-2xl font-bold text-slate-800">{{ $t('menu.categories') }}</h1>
+        <h1 class="text-2xl font-bold text-neutral-900">{{ $t('menu.categories') }}</h1>
         <div class="flex gap-3 items-center w-full sm:w-auto">
           <div class="relative flex-1 sm:w-64">
             <input
               v-model="searchQuery"
               type="text"
               :placeholder="$t('common.search')"
-              class="py-2 pr-4 pl-10 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              class="py-2.5 pr-4 pl-11 w-full rounded-lg border shadow-sm transition-all duration-200 border-neutral-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 hover:border-neutral-400"
             />
-            <svg class="absolute top-2.5 left-3 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="absolute top-3 left-4 w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
           <button 
             @click.stop.prevent="openCreateModal" 
             type="button"
-            class="inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500 px-4 py-2 text-sm"
+            class="inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 px-5 py-2.5 text-sm shadow-md hover:shadow-lg active:scale-[0.98] gap-2"
             :disabled="!restaurantId"
           >
-            <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
             {{ $t('menu.addCategory') }}
@@ -70,15 +70,15 @@
           />
           
           <!-- Pagination -->
-          <div v-if="totalPages > 1" class="flex justify-between items-center pt-4 mt-6 border-t">
-            <div class="text-sm text-gray-700">
+          <div v-if="totalPages > 1" class="flex justify-between items-center pt-4 mt-6 border-t border-neutral-200">
+            <div class="text-sm text-neutral-700">
               {{ $t('pagination.showing') }} {{ startIndex + 1 }} {{ $t('pagination.to') }} {{ Math.min(endIndex, filteredCategories.length) }} {{ $t('pagination.of') }} {{ filteredCategories.length }}
             </div>
             <div class="flex gap-2">
               <button
                 @click="currentPage--"
                 :disabled="currentPage === 1"
-                class="px-3 py-1 rounded-md border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                class="px-4 py-2 text-sm font-medium rounded-lg border transition-colors border-neutral-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-50 text-neutral-700"
               >
                 {{ $t('pagination.previous') }}
               </button>
@@ -87,8 +87,8 @@
                 :key="page"
                 @click="currentPage = page"
                 :class="[
-                  'px-3 py-1 border rounded-md',
-                  currentPage === page ? 'bg-indigo-600 text-white' : 'hover:bg-gray-50'
+                  'px-4 py-2 border rounded-lg text-sm font-medium transition-all duration-200',
+                  currentPage === page ? 'bg-primary-600 text-white border-primary-600 shadow-md' : 'border-neutral-300 text-neutral-700 hover:bg-neutral-50'
                 ]"
               >
                 {{ page }}
@@ -96,7 +96,7 @@
               <button
                 @click="currentPage++"
                 :disabled="currentPage === totalPages"
-                class="px-3 py-1 rounded-md border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                class="px-4 py-2 text-sm font-medium rounded-lg border transition-colors border-neutral-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-50 text-neutral-700"
               >
                 {{ $t('pagination.next') }}
               </button>
@@ -106,46 +106,46 @@
       </Card>
 
       <!-- Create/Edit Category Modal -->
-      <div v-if="showCreateModal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-black bg-opacity-50" @click.self="showCreateModal = false">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 transform transition-all">
+      <div v-if="showCreateModal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm" @click.self="showCreateModal = false">
+        <div class="mx-4 w-full max-w-lg bg-white rounded-2xl transition-all transform shadow-large">
           <!-- Header -->
-          <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <h3 class="text-lg font-semibold text-gray-900">
+          <div class="flex justify-between items-center px-6 py-5 border-b border-neutral-200">
+            <h3 class="text-xl font-semibold text-neutral-900">
               {{ editingCategory ? $t('menu.editCategory') : $t('menu.addCategory') }}
             </h3>
             <button
               @click="showCreateModal = false"
               type="button"
-              class="text-gray-400 hover:text-gray-500 focus:outline-none"
+              class="p-1 rounded-lg transition-colors text-neutral-400 hover:text-neutral-600 focus:outline-none hover:bg-neutral-100"
             >
-              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
           <!-- Body -->
-          <div class="px-6 py-4 space-y-4">
+          <div class="px-6 py-6 space-y-5">
             <div>
-              <label class="block mb-1 text-sm font-medium text-gray-700">
-                {{ $t('menu.categoryName') }} <span class="text-red-500">*</span>
+              <label class="block mb-2 text-sm font-medium text-neutral-700">
+                {{ $t('menu.categoryName') }} <span class="text-primary-600">*</span>
               </label>
               <input
                 v-model="form.name"
                 type="text"
                 required
-                class="block px-4 py-2 w-full rounded-lg border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                class="block px-4 py-2.5 w-full rounded-lg border shadow-sm transition-all duration-200 border-neutral-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 hover:border-neutral-400 sm:text-sm"
                 :placeholder="$t('menu.categoryName')"
               />
             </div>
             <div>
-              <label class="block mb-1 text-sm font-medium text-gray-700">
+              <label class="block mb-2 text-sm font-medium text-neutral-700">
                 {{ $t('menu.parentCategory') }}
               </label>
               <div class="relative">
                 <select
                   v-model="form.parentId"
-                  class="block py-2 pr-10 pl-4 w-full rounded-md border border-gray-300 shadow-sm appearance-none focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  class="block py-2.5 pr-10 pl-4 w-full rounded-lg border shadow-sm transition-all duration-200 appearance-none border-neutral-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 hover:border-neutral-400 sm:text-sm"
                 >
                   <option :value="null">{{ $t('menu.noCategory') }}</option>
                   <option
@@ -156,31 +156,31 @@
                     {{ option.label }}
                   </option>
                 </select>
-                <svg class="absolute inset-y-0 right-3 my-auto w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="absolute inset-y-0 right-3 my-auto w-4 h-4 pointer-events-none text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
               </div>
             </div>
             <div>
-              <label class="block mb-1 text-sm font-medium text-gray-700">
+              <label class="block mb-2 text-sm font-medium text-neutral-700">
                 {{ $t('menu.sortOrder') }}
               </label>
               <input
                 v-model.number="form.sortOrder"
                 type="number"
                 min="0"
-                class="block px-4 py-2 w-full rounded-lg border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                class="block px-4 py-2.5 w-full rounded-lg border shadow-sm transition-all duration-200 border-neutral-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 hover:border-neutral-400 sm:text-sm"
                 :placeholder="$t('menu.sortOrder')"
               />
             </div>
           </div>
 
           <!-- Footer -->
-          <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3">
+          <div class="flex gap-3 justify-end px-6 py-4 rounded-b-2xl border-t border-neutral-200 bg-neutral-50">
             <button
               @click="showCreateModal = false"
               type="button"
-              class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              class="px-5 py-2.5 text-sm font-medium bg-white rounded-lg border shadow-sm transition-all duration-200 text-neutral-700 border-neutral-300 hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
             >
               {{ $t('common.cancel') }}
             </button>
@@ -188,7 +188,7 @@
               @click="saveCategory"
               type="button"
               :disabled="saving"
-              class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-5 py-2.5 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98]"
             >
               <span v-if="saving">Saving...</span>
               <span v-else>{{ $t('common.save') }}</span>
@@ -198,53 +198,53 @@
       </div>
 
       <!-- Add Item Modal -->
-      <div v-if="showAddItemModal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-black bg-opacity-50" @click.self="showAddItemModal = false">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto transform transition-all">
+      <div v-if="showAddItemModal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm" @click.self="showAddItemModal = false">
+        <div class="bg-white rounded-2xl shadow-large w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto transform transition-all">
           <!-- Header -->
-          <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
-            <h3 class="text-lg font-semibold text-gray-900">
+          <div class="flex sticky top-0 justify-between items-center px-6 py-5 bg-white rounded-t-2xl border-b border-neutral-200">
+            <h3 class="text-xl font-semibold text-neutral-900">
               {{ $t('menu.addItem') }}
             </h3>
             <button
               @click="showAddItemModal = false"
               type="button"
-              class="text-gray-400 hover:text-gray-500 focus:outline-none"
+              class="p-1 rounded-lg transition-colors text-neutral-400 hover:text-neutral-600 focus:outline-none hover:bg-neutral-100"
             >
-              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
           <!-- Body -->
-          <div class="px-6 py-4 space-y-4">
+          <div class="px-6 py-6 space-y-5">
             <div>
-              <label class="block mb-1 text-sm font-medium text-gray-700">
-                {{ $t('menu.itemName') }} <span class="text-red-500">*</span>
+              <label class="block mb-2 text-sm font-medium text-neutral-700">
+                {{ $t('menu.itemName') }} <span class="text-primary-600">*</span>
               </label>
               <input
                 v-model="newItemForm.name"
                 type="text"
                 required
-                class="block px-4 py-2 w-full rounded-lg border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                class="block px-4 py-2.5 w-full rounded-lg border shadow-sm transition-all duration-200 border-neutral-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 hover:border-neutral-400 sm:text-sm"
                 :placeholder="$t('menu.itemName')"
               />
             </div>
             <div>
-              <label class="block mb-1 text-sm font-medium text-gray-700">
+              <label class="block mb-2 text-sm font-medium text-neutral-700">
                 {{ $t('menu.description') }}
               </label>
               <textarea
                 v-model="newItemForm.description"
                 rows="3"
-                class="block px-4 py-2 w-full rounded-lg border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                class="block px-4 py-2.5 w-full rounded-lg border shadow-sm transition-all duration-200 border-neutral-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 hover:border-neutral-400 sm:text-sm"
                 :placeholder="$t('menu.description')"
               ></textarea>
             </div>
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block mb-1 text-sm font-medium text-gray-700">
-                  {{ $t('menu.price') }} <span class="text-red-500">*</span>
+                <label class="block mb-2 text-sm font-medium text-neutral-700">
+                  {{ $t('menu.price') }} <span class="text-primary-600">*</span>
                 </label>
                 <input
                   v-model.number="newItemForm.price"
@@ -252,19 +252,19 @@
                   step="0.01"
                   min="0"
                   required
-                  class="block px-4 py-2 w-full rounded-lg border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  class="block px-4 py-2.5 w-full rounded-lg border shadow-sm transition-all duration-200 border-neutral-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 hover:border-neutral-400 sm:text-sm"
                   :placeholder="$t('menu.price')"
                 />
               </div>
               <div>
-                <label class="block mb-1 text-sm font-medium text-gray-700">
+                <label class="block mb-2 text-sm font-medium text-neutral-700">
                   {{ $t('menu.sortOrder') }}
                 </label>
                 <input
                   v-model.number="newItemForm.displayOrder"
                   type="number"
                   min="0"
-                  class="block px-4 py-2 w-full rounded-lg border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  class="block px-4 py-2.5 w-full rounded-lg border shadow-sm transition-all duration-200 border-neutral-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 hover:border-neutral-400 sm:text-sm"
                   :placeholder="$t('menu.sortOrder')"
                 />
               </div>
@@ -285,20 +285,20 @@
                 v-model="newItemForm.isAvailable"
                 type="checkbox"
                 id="item-available"
-                class="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+                class="w-4 h-4 rounded text-primary-600 border-neutral-300 focus:ring-primary-500"
               />
-              <label for="item-available" class="ml-2 text-sm text-gray-700">
+              <label for="item-available" class="ml-2 text-sm text-neutral-700">
                 {{ $t('menu.isAvailable') }}
               </label>
             </div>
           </div>
 
           <!-- Footer -->
-          <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3 sticky bottom-0 bg-white">
+          <div class="flex sticky bottom-0 gap-3 justify-end px-6 py-4 rounded-b-2xl border-t border-neutral-200 bg-neutral-50">
             <button
               @click="showAddItemModal = false"
               type="button"
-              class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              class="px-5 py-2.5 text-sm font-medium bg-white rounded-lg border shadow-sm transition-all duration-200 text-neutral-700 border-neutral-300 hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
             >
               {{ $t('common.cancel') }}
             </button>
@@ -306,7 +306,7 @@
               @click="saveNewItem"
               type="button"
               :disabled="saving"
-              class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-5 py-2.5 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98]"
             >
               <span v-if="saving">Saving...</span>
               <span v-else>{{ $t('common.save') }}</span>
