@@ -24,22 +24,23 @@
         class="hidden"
       />
 
-      <div v-if="!preview && !uploading" class="text-center" @click="triggerFileInput">
+      <div v-if="!preview && !props.uploading" class="text-center" @click="triggerFileInput">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
         </svg>
         <p class="mt-2 text-sm text-gray-600">
-          <span class="font-semibold text-indigo-600 hover:text-indigo-500">{{ $t('files.selectFile') }}</span>
-          {{ $t('common.or') }} {{ $t('files.dragDrop') }}
+          <span class="font-semibold text-indigo-600 hover:text-indigo-500 cursor-pointer">{{ $t('files.selectFile') || 'Click to select file' }}</span>
+          <span v-if="$t('common.or')"> {{ $t('common.or') }} </span>
+          <span>{{ $t('files.dragDrop') || 'drag and drop' }}</span>
         </p>
         <p class="mt-1 text-xs text-gray-500">
           {{ accept || 'PNG, JPG, GIF up to 10MB' }}
         </p>
       </div>
 
-      <div v-else-if="uploading" class="text-center">
+      <div v-else-if="props.uploading" class="text-center">
         <LoadingSpinner size="lg" />
-        <p class="mt-2 text-sm text-gray-600">{{ $t('common.uploading') }}...</p>
+        <p class="mt-2 text-sm text-gray-600">{{ $t('common.uploading') || 'Uploading' }}...</p>
       </div>
 
       <div v-else class="relative">
@@ -72,13 +73,15 @@ interface Props {
   disabled?: boolean
   hint?: string
   error?: string
+  uploading?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   accept: 'image/*',
   maxSize: 10,
   disabled: false,
-  required: false
+  required: false,
+  uploading: false
 })
 
 const emit = defineEmits<{
@@ -88,15 +91,17 @@ const emit = defineEmits<{
 
 const fileInput = ref<HTMLInputElement | null>(null)
 const isDragging = ref(false)
-const uploading = ref(false)
-const preview = ref(props.modelValue || '')
+const preview = ref<string>('')
 const fileName = ref('')
 
+// Initialize preview from modelValue
 watch(() => props.modelValue, (newValue) => {
-  if (newValue && newValue !== preview.value) {
+  if (newValue && newValue.trim()) {
     preview.value = newValue
+  } else {
+    preview.value = ''
   }
-})
+}, { immediate: true })
 
 const triggerFileInput = () => {
   if (!props.disabled) {
@@ -148,7 +153,7 @@ const processFile = async (file: File) => {
   }
   reader.readAsDataURL(file)
 
-  // Emit file for upload
+  // Emit file for upload - parent component will handle the actual upload
   emit('upload', file)
 }
 

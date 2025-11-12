@@ -16,12 +16,17 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
-          <UiButton @click="openCreateModal" variant="primary">
+          <button 
+            @click.stop.prevent="openCreateModal" 
+            type="button"
+            class="inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500 px-4 py-2 text-sm"
+            :disabled="!restaurantId"
+          >
             <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
             {{ $t('menu.addCategory') }}
-          </UiButton>
+          </button>
         </div>
       </div>
 
@@ -100,119 +105,222 @@
         </div>
       </Card>
 
-      <!-- Create/Edit Modal -->
-      <Modal v-model="showCreateModal" :title="editingCategory ? $t('menu.editCategory') : $t('menu.addCategory')">
-        <div class="space-y-4">
-          <Input
-            v-model="form.name"
-            :label="$t('menu.categoryName')"
-            required
-          />
-          <div>
-            <label class="block mb-1 text-sm font-medium text-gray-700">
-              {{ $t('menu.parentCategory') }}
-            </label>
-            <div class="relative">
-              <select
-                v-model="form.parentId"
-                class="block py-2 pr-10 pl-4 w-full rounded-md border-gray-300 shadow-sm appearance-none focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              >
-                <option :value="null">{{ $t('menu.noCategory') }}</option>
-                <option
-                  v-for="option in categoryOptions"
-                  :key="option.id"
-                  :value="option.id"
-                >
-                  {{ option.label }}
-                </option>
-              </select>
-              <svg class="absolute inset-y-0 right-3 my-auto w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      <!-- Create/Edit Category Modal -->
+      <div v-if="showCreateModal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-black bg-opacity-50" @click.self="showCreateModal = false">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 transform transition-all">
+          <!-- Header -->
+          <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-gray-900">
+              {{ editingCategory ? $t('menu.editCategory') : $t('menu.addCategory') }}
+            </h3>
+            <button
+              @click="showCreateModal = false"
+              type="button"
+              class="text-gray-400 hover:text-gray-500 focus:outline-none"
+            >
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
+            </button>
+          </div>
+
+          <!-- Body -->
+          <div class="px-6 py-4 space-y-4">
+            <div>
+              <label class="block mb-1 text-sm font-medium text-gray-700">
+                {{ $t('menu.categoryName') }} <span class="text-red-500">*</span>
+              </label>
+              <input
+                v-model="form.name"
+                type="text"
+                required
+                class="block px-4 py-2 w-full rounded-lg border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                :placeholder="$t('menu.categoryName')"
+              />
+            </div>
+            <div>
+              <label class="block mb-1 text-sm font-medium text-gray-700">
+                {{ $t('menu.parentCategory') }}
+              </label>
+              <div class="relative">
+                <select
+                  v-model="form.parentId"
+                  class="block py-2 pr-10 pl-4 w-full rounded-md border border-gray-300 shadow-sm appearance-none focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                >
+                  <option :value="null">{{ $t('menu.noCategory') }}</option>
+                  <option
+                    v-for="option in categoryOptions"
+                    :key="option.id"
+                    :value="option.id"
+                  >
+                    {{ option.label }}
+                  </option>
+                </select>
+                <svg class="absolute inset-y-0 right-3 my-auto w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+            <div>
+              <label class="block mb-1 text-sm font-medium text-gray-700">
+                {{ $t('menu.sortOrder') }}
+              </label>
+              <input
+                v-model.number="form.sortOrder"
+                type="number"
+                min="0"
+                class="block px-4 py-2 w-full rounded-lg border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                :placeholder="$t('menu.sortOrder')"
+              />
             </div>
           </div>
-          <Input
-            v-model="form.sortOrder"
-            type="number"
-            :label="$t('menu.sortOrder')"
-          />
-        </div>
 
-        <template #footer>
-          <UiButton @click="showCreateModal = false" variant="secondary">
-            {{ $t('common.cancel') }}
-          </UiButton>
-          <UiButton @click="saveCategory" variant="primary" :loading="saving">
-            {{ $t('common.save') }}
-          </UiButton>
-        </template>
-      </Modal>
+          <!-- Footer -->
+          <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3">
+            <button
+              @click="showCreateModal = false"
+              type="button"
+              class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              {{ $t('common.cancel') }}
+            </button>
+            <button
+              @click="saveCategory"
+              type="button"
+              :disabled="saving"
+              class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span v-if="saving">Saving...</span>
+              <span v-else>{{ $t('common.save') }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
 
       <!-- Add Item Modal -->
-      <Modal v-model="showAddItemModal" :title="$t('menu.addItem')">
-        <div class="space-y-4">
-          <Input
-            v-model="newItemForm.name"
-            :label="$t('menu.itemName')"
-            required
-          />
-          <div>
-            <label class="block mb-1 text-sm font-medium text-gray-700">
-              {{ $t('menu.description') }}
-            </label>
-            <textarea
-              v-model="newItemForm.description"
-              rows="3"
-              class="block px-4 py-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            ></textarea>
+      <div v-if="showAddItemModal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-black bg-opacity-50" @click.self="showAddItemModal = false">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto transform transition-all">
+          <!-- Header -->
+          <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
+            <h3 class="text-lg font-semibold text-gray-900">
+              {{ $t('menu.addItem') }}
+            </h3>
+            <button
+              @click="showAddItemModal = false"
+              type="button"
+              class="text-gray-400 hover:text-gray-500 focus:outline-none"
+            >
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-          <div class="grid grid-cols-2 gap-4">
-            <Input
-              v-model="newItemForm.price"
-              type="number"
-              step="0.01"
-              :label="$t('menu.price')"
-              required
-            />
-            <Input
-              v-model="newItemForm.displayOrder"
-              type="number"
-              :label="$t('menu.sortOrder')"
-            />
+
+          <!-- Body -->
+          <div class="px-6 py-4 space-y-4">
+            <div>
+              <label class="block mb-1 text-sm font-medium text-gray-700">
+                {{ $t('menu.itemName') }} <span class="text-red-500">*</span>
+              </label>
+              <input
+                v-model="newItemForm.name"
+                type="text"
+                required
+                class="block px-4 py-2 w-full rounded-lg border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                :placeholder="$t('menu.itemName')"
+              />
+            </div>
+            <div>
+              <label class="block mb-1 text-sm font-medium text-gray-700">
+                {{ $t('menu.description') }}
+              </label>
+              <textarea
+                v-model="newItemForm.description"
+                rows="3"
+                class="block px-4 py-2 w-full rounded-lg border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                :placeholder="$t('menu.description')"
+              ></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block mb-1 text-sm font-medium text-gray-700">
+                  {{ $t('menu.price') }} <span class="text-red-500">*</span>
+                </label>
+                <input
+                  v-model.number="newItemForm.price"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  required
+                  class="block px-4 py-2 w-full rounded-lg border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  :placeholder="$t('menu.price')"
+                />
+              </div>
+              <div>
+                <label class="block mb-1 text-sm font-medium text-gray-700">
+                  {{ $t('menu.sortOrder') }}
+                </label>
+                <input
+                  v-model.number="newItemForm.displayOrder"
+                  type="number"
+                  min="0"
+                  class="block px-4 py-2 w-full rounded-lg border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  :placeholder="$t('menu.sortOrder')"
+                />
+              </div>
+            </div>
+            <div class="w-full">
+              <FileUpload
+                v-model="newItemForm.imageUrl"
+                :label="$t('menu.imageUrl') || 'Image'"
+                accept="image/*"
+                :max-size="5"
+                :disabled="uploadingImage"
+                :uploading="uploadingImage"
+                @upload="handleImageUpload"
+              />
+            </div>
+            <div class="flex items-center">
+              <input
+                v-model="newItemForm.isAvailable"
+                type="checkbox"
+                id="item-available"
+                class="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+              />
+              <label for="item-available" class="ml-2 text-sm text-gray-700">
+                {{ $t('menu.isAvailable') }}
+              </label>
+            </div>
           </div>
-          <FileUpload
-            v-model="newItemForm.imageUrl"
-            :label="$t('menu.imageUrl')"
-            @upload="handleImageUpload"
-          />
-          <div class="flex items-center">
-            <input
-              v-model="newItemForm.isAvailable"
-              type="checkbox"
-              id="item-available"
-              class="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
-            />
-            <label for="item-available" class="ml-2 text-sm text-gray-700">
-              {{ $t('menu.isAvailable') }}
-            </label>
+
+          <!-- Footer -->
+          <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3 sticky bottom-0 bg-white">
+            <button
+              @click="showAddItemModal = false"
+              type="button"
+              class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              {{ $t('common.cancel') }}
+            </button>
+            <button
+              @click="saveNewItem"
+              type="button"
+              :disabled="saving"
+              class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span v-if="saving">Saving...</span>
+              <span v-else>{{ $t('common.save') }}</span>
+            </button>
           </div>
         </div>
-
-        <template #footer>
-          <UiButton @click="showAddItemModal = false" variant="secondary">
-            {{ $t('common.cancel') }}
-          </UiButton>
-          <UiButton @click="saveNewItem" variant="primary" :loading="saving">
-            {{ $t('common.save') }}
-          </UiButton>
-        </template>
-      </Modal>
+      </div>
     </div>
   </NuxtLayout>
 </template>
 
 <script setup lang="ts">
 import type { MenuCategory } from '@/stores/restaurant'
+import FileUpload from '@/components/ui/FileUpload.vue'
 
 definePageMeta({
   layout: false,
@@ -347,14 +455,35 @@ watch(searchQuery, () => {
   currentPage.value = 1
 })
 
-const openCreateModal = () => {
+const openCreateModal = (event?: Event) => {
+  event?.preventDefault()
+  event?.stopPropagation()
+  
+  if (!restaurantId.value) {
+    alert(t('messages.errorOccurred') || 'Restaurant ID not found. Please login again.')
+    return
+  }
+  
   resetForm()
+  editingCategory.value = null
   showCreateModal.value = true
 }
 
 const openAddItemModal = (categoryId: string) => {
+  if (!categoryId) {
+    alert(t('messages.errorOccurred') || 'Category ID not found.')
+    return
+  }
   selectedCategoryForItem.value = categoryId
-  ensureItemForm(categoryId)
+  // Reset form
+  newItemForm.value = {
+    name: '',
+    description: '',
+    price: 0,
+    imageUrl: '',
+    isAvailable: true,
+    displayOrder: 0
+  }
   showAddItemModal.value = true
 }
 
@@ -379,8 +508,10 @@ const loadCategories = async () => {
   loading.value = true
   try {
     await restaurantStore.fetchCategories(restaurantId.value, locale.value)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to load categories:', error)
+    const errorMessage = error?.response?.data?.message || error?.message || t('messages.errorOccurred') || 'Failed to load categories'
+    alert(errorMessage)
   } finally {
     loading.value = false
   }
@@ -449,8 +580,11 @@ const deleteCategory = async (category: MenuCategory) => {
   try {
     await restaurantStore.deleteCategory(category.id, restaurantId.value, locale.value)
     await loadCategories()
-  } catch (error) {
+    alert(t('messages.success') || 'Category deleted successfully!')
+  } catch (error: any) {
     console.error('Failed to delete category:', error)
+    const errorMessage = error?.response?.data?.message || error?.message || t('messages.errorOccurred') || 'Failed to delete category'
+    alert(errorMessage)
   }
 }
 
@@ -489,30 +623,61 @@ const saveCategory = async () => {
     await loadCategories()
     showCreateModal.value = false
     resetForm()
-  } catch (error) {
+    alert(t('messages.success') || 'Category saved successfully!')
+  } catch (error: any) {
     console.error('Failed to save category:', error)
+    const errorMessage = error?.response?.data?.message || error?.message || t('messages.errorOccurred') || 'Failed to save category'
+    alert(errorMessage)
   } finally {
     saving.value = false
   }
 }
 
+const uploadingImage = ref(false)
+
 const handleImageUpload = async (file: File) => {
-  // For now, convert to base64 data URL
-  // In production, you'd upload to a cloud storage service
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    newItemForm.value.imageUrl = e.target?.result as string
+  uploadingImage.value = true
+  const api = useApi()
+  const formData = new FormData()
+  formData.append('file', file)
+
+  try {
+    const response = await api.post('/Files/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    // The API returns Result<string> with success and data properties
+    if (response.data.success) {
+      newItemForm.value.imageUrl = response.data.data
+    } else {
+      throw new Error(response.data.message || 'Upload failed')
+    }
+  } catch (error: any) {
+    console.error('Failed to upload image:', error)
+    const errorMessage = error?.response?.data?.message || error?.response?.data?.error || error?.message || 'Failed to upload image'
+    alert(errorMessage)
+    newItemForm.value.imageUrl = ''
+  } finally {
+    uploadingImage.value = false
   }
-  reader.readAsDataURL(file)
 }
 
 const saveNewItem = async () => {
   if (!selectedCategoryForItem.value) {
+    alert(t('messages.errorOccurred') || 'Category not selected.')
     return
   }
 
   if (!newItemForm.value.name.trim()) {
-    alert(t('validation.required'))
+    alert(t('validation.required') || 'Item name is required')
+    return
+  }
+
+  const price = Number(newItemForm.value.price)
+  if (!price || price <= 0 || !isFinite(price)) {
+    alert(t('validation.required') || 'Price must be greater than 0')
     return
   }
 
@@ -521,8 +686,8 @@ const saveNewItem = async () => {
     await restaurantStore.createMenuItem(selectedCategoryForItem.value, {
       name: newItemForm.value.name.trim(),
       description: newItemForm.value.description?.trim() || null,
-      price: Number(newItemForm.value.price) || 0,
-      imageUrl: newItemForm.value.imageUrl || null,
+      price: price,
+      imageUrl: newItemForm.value.imageUrl?.trim() || null,
       isAvailable: newItemForm.value.isAvailable,
       displayOrder: Number(newItemForm.value.displayOrder) || 0
     })
@@ -540,9 +705,11 @@ const saveNewItem = async () => {
     showAddItemModal.value = false
     selectedCategoryForItem.value = null
     await loadCategories()
-  } catch (error) {
+    alert(t('messages.success') || 'Menu item created successfully!')
+  } catch (error: any) {
     console.error('Failed to create menu item:', error)
-    alert(t('messages.errorOccurred'))
+    const errorMessage = error?.response?.data?.message || error?.message || t('messages.errorOccurred') || 'Failed to create menu item'
+    alert(errorMessage)
   } finally {
     saving.value = false
   }
@@ -554,20 +721,27 @@ const createMenuItemForCategory = async (categoryId: string) => {
     return
   }
 
+  if (!formState.name.trim()) {
+    alert(t('validation.required') || 'Item name is required')
+    return
+  }
+
   try {
     await restaurantStore.createMenuItem(categoryId, {
-      name: formState.name,
-      description: formState.description,
+      name: formState.name.trim(),
+      description: formState.description?.trim() || null,
       price: Number(formState.price) || 0,
-      imageUrl: formState.imageUrl,
+      imageUrl: formState.imageUrl || null,
       isAvailable: formState.isAvailable,
       displayOrder: Number(formState.displayOrder) || 0
     })
     resetItemForm(categoryId)
     showItemForms.value[categoryId] = false
     await loadCategories()
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to create menu item:', error)
+    const errorMessage = error?.response?.data?.message || error?.message || t('messages.errorOccurred') || 'Failed to create menu item'
+    alert(errorMessage)
   }
 }
 

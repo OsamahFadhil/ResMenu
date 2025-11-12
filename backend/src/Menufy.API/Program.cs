@@ -4,6 +4,7 @@ using Menufy.Infrastructure;
 using Menufy.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -98,13 +99,24 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     try
     {
+        Console.WriteLine("🔄 Checking database migrations...");
         dbContext.Database.Migrate();
         Console.WriteLine("✅ Database migrated successfully!");
     }
     catch (Exception ex)
     {
         Console.WriteLine($"❌ Database migration error: {ex.Message}");
-        throw;
+        // In development, we'll still try to start the app
+        // In production, you might want to fail fast here
+        if (app.Environment.IsProduction())
+        {
+            throw;
+        }
+        else
+        {
+            Console.WriteLine("⚠️ Continuing in development mode despite migration error...");
+            Console.WriteLine("💡 If issues persist, run: docker compose down -v to reset the database.");
+        }
     }
 }
 
@@ -112,7 +124,11 @@ app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory()),
+    RequestPath = "" // empty means serve from root
+});
 app.MapControllers();
 
 app.Run();

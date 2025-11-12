@@ -21,4 +21,13 @@
     <ProjectReference Include="..\Menufy.Infrastructure\Menufy.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\uploads\76638e03-77a4-410a-93e1-682a5319bd2b.png" />
+    <None Include="wwwroot\uploads\b04d30aa-34dd-4366-85f8-dda7317dcaac.png" />
+  </ItemGroup>
+
 </Project>

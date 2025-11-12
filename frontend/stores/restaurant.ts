@@ -217,15 +217,20 @@ export const useRestaurantStore = defineStore('restaurant', {
 
     async createCategory(restaurantId: string, categoryData: CreateCategoryPayload, language?: string) {
       const api = useApi();
-      const response = await api.post(`/restaurants/${restaurantId}/categories`, categoryData);
+      try {
+        const response = await api.post(`/restaurants/${restaurantId}/categories`, categoryData);
 
-      if (response.data.success) {
-        const category = normalizeCategory(response.data.data);
-        await this.fetchCategories(restaurantId, language);
-        return category;
+        if (response.data.success) {
+          const category = normalizeCategory(response.data.data);
+          await this.fetchCategories(restaurantId, language);
+          return category;
+        }
+
+        throw new Error(response.data.message || 'Failed to create category');
+      } catch (error: any) {
+        const errorMessage = error?.response?.data?.message || error?.response?.data?.error || error?.message || 'Failed to create category';
+        throw new Error(errorMessage);
       }
-
-      throw new Error(response.data.message || 'Failed to create category');
     },
 
     async updateCategory(
@@ -235,17 +240,19 @@ export const useRestaurantStore = defineStore('restaurant', {
       language?: string,
     ) {
       const api = useApi();
-      const response = await api.put(`/categories/${categoryId}`, {
-        ...categoryData,
-        id: categoryId,
-      });
+      try {
+        const response = await api.put(`/categories/${categoryId}`, categoryData);
 
-      if (response.data.success) {
-        await this.fetchCategories(restaurantId, language);
-        return true;
+        if (response.data.success) {
+          await this.fetchCategories(restaurantId, language);
+          return true;
+        }
+
+        throw new Error(response.data.message || 'Failed to update category');
+      } catch (error: any) {
+        const errorMessage = error?.response?.data?.message || error?.response?.data?.error || error?.message || 'Failed to update category';
+        throw new Error(errorMessage);
       }
-
-      throw new Error(response.data.message || 'Failed to update category');
     },
 
     async deleteCategory(categoryId: string, restaurantId: string, language?: string) {
@@ -265,18 +272,23 @@ export const useRestaurantStore = defineStore('restaurant', {
 
     async createMenuItem(categoryId: string, itemData: CreateMenuItemPayload) {
       const api = useApi();
-      const response = await api.post(`/categories/${categoryId}/items`, itemData);
+      try {
+        const response = await api.post(`/categories/${categoryId}/items`, itemData);
 
-      if (response.data.success) {
-        const item = normalizeMenuItem(response.data.data);
-        const category = findCategoryById(this.categories, categoryId);
-        if (category) {
-          insertMenuItemSorted(category.items, item);
+        if (response.data.success) {
+          const item = normalizeMenuItem(response.data.data);
+          const category = findCategoryById(this.categories, categoryId);
+          if (category) {
+            insertMenuItemSorted(category.items, item);
+          }
+          return item;
         }
-        return item;
-      }
 
-      throw new Error(response.data.message || 'Failed to create menu item');
+        throw new Error(response.data.message || 'Failed to create menu item');
+      } catch (error: any) {
+        const errorMessage = error?.response?.data?.message || error?.response?.data?.error || error?.message || 'Failed to create menu item';
+        throw new Error(errorMessage);
+      }
     },
 
     async generateMenu(
