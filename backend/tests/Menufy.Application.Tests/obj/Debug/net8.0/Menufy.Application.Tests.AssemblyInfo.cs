@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Menufy.Application.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+30680c0b38e3ecbb99419a737d71c1430d68f4be")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3b651e7bdcd696247fd146497af32d766facd6a4")]
 [assembly: System.Reflection.AssemblyProductAttribute("Menufy.Application.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Menufy.Application.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -2,11 +2,13 @@ using MediatR;
 using Menufy.API.Contracts;
 using Menufy.Application.Features.MenuCategories.Commands.DeleteCategory;
 using Menufy.Application.Features.MenuCategories.Commands.UpdateCategory;
+using Menufy.Application.Features.MenuCategories.Commands.ReorderCategories;
 using Menufy.Application.Features.Menus.Commands.CreateCategory;
 using Menufy.Application.Features.Menus.Commands.CreateMenuItem;
 using Menufy.Application.Features.Menus.Commands.GenerateMenu;
 using Menufy.Application.Features.MenuItems.Commands.DeleteMenuItem;
 using Menufy.Application.Features.MenuItems.Commands.UpdateMenuItem;
+using Menufy.Application.Features.MenuItems.Commands.ReorderItems;
 using Menufy.Application.Features.Menus.DTOs;
 using Menufy.Application.Features.Menus.Queries.GetPublicMenu;
 using Menufy.Application.Features.Menus.Queries.GetRestaurantCategories;
@@ -144,6 +146,36 @@ public class MenusController : ControllerBase
     public async Task<IActionResult> DeleteMenuItem(Guid id)
     {
         var command = new DeleteMenuItemCommand { Id = id };
+        var result = await _mediator.Send(command);
+
+        if (!result.Success)
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+
+    [HttpPost("restaurants/{restaurantId:guid}/categories/reorder")]
+    [Authorize(Roles = "RestaurantOwner,Admin")]
+    public async Task<IActionResult> ReorderCategories(
+        Guid restaurantId,
+        [FromBody] List<CategoryOrderDto> newOrder)
+    {
+        var command = new ReorderCategoriesCommand(restaurantId, newOrder);
+        var result = await _mediator.Send(command);
+
+        if (!result.Success)
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+
+    [HttpPost("categories/{categoryId:guid}/items/reorder")]
+    [Authorize(Roles = "RestaurantOwner,Admin")]
+    public async Task<IActionResult> ReorderMenuItems(
+        Guid categoryId,
+        [FromBody] List<ItemOrderDto> newOrder)
+    {
+        var command = new ReorderMenuItemsCommand(categoryId, newOrder);
         var result = await _mediator.Send(command);
 
         if (!result.Success)

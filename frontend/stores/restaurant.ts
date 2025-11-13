@@ -20,6 +20,7 @@ export interface MenuItem {
   localizedDescription?: string | null;
   price: number;
   imageUrl?: string | null;
+  images?: string[];  // Multiple images support
   isAvailable: boolean;
   displayOrder: number;
   translations?: MenuItemTranslations;

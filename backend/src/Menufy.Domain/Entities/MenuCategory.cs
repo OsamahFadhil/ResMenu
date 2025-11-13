@@ -11,6 +11,11 @@ public class MenuCategory : BaseEntity
     public Guid RestaurantId { get; set; }
     public Guid? ParentCategoryId { get; set; }
 
+    // Customization Properties
+    public string? CustomTheme { get; set; } // JSON: CategoryThemeDto
+    public string? CustomLayout { get; set; } // "list" | "grid" | "cards"
+    public string? Icon { get; set; } // Icon name or emoji
+
     // Navigation properties
     public Restaurant Restaurant { get; set; } = null!;
     public ICollection<MenuItem> MenuItems { get; set; } = new List<MenuItem>();

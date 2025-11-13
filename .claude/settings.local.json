@@ -4,7 +4,10 @@
       "Bash(powershell:*)",
       "Bash(npm install:*)",
       "Bash(docker-compose build:*)",
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Bash(cat:*)",
+      "Bash(dotnet ef migrations:*)",
+      "Bash(dotnet ef database update:*)"
     ],
     "deny": [],
     "ask": []

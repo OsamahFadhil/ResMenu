@@ -1,95 +1,178 @@
 <template>
-  <div 
-    v-for="category in categories" 
-    :key="category.id" 
-    :class="categoryClasses"
-    :style="categoryStyle"
+  <div
+    v-for="category in categories"
+    :key="category.id"
+    class="mb-8 rounded-3xl shadow-xl overflow-hidden transition-all hover:shadow-2xl"
+    :style="{ backgroundColor: settings?.surfaceColor || '#ffffff' }"
   >
-    <h2 
+    <!-- Category Header -->
+    <div
       v-if="displaySettings?.showCategories !== false"
-      :class="categoryTitleClasses" 
-      :style="categoryTitleStyle"
+      class="px-6 sm:px-8 py-6 border-b-4"
+      :style="{
+        borderColor: settings?.primaryColor || '#dc2626',
+        backgroundColor: `${settings?.primaryColor || '#dc2626'}10`
+      }"
     >
-      {{ category.localizedName || category.name }}
-    </h2>
-
-    <div :class="itemsContainerClasses">
-      <div
-        v-for="item in category.items"
-        :key="item.id"
-        :class="itemClasses"
-        :style="itemStyle"
+      <h2
+        class="text-3xl sm:text-4xl font-bold tracking-tight"
+        :style="{
+          color: settings?.primaryColor || '#dc2626',
+          fontFamily: settings?.fontFamily || 'Inter'
+        }"
       >
-        <div v-if="displaySettings?.showImages && item.imageUrl" class="flex-shrink-0">
-          <img :src="item.imageUrl" :alt="item.localizedName || item.name" :class="imageClasses" />
-        </div>
-        <div class="flex-1 space-y-2">
-          <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-            <h3 :class="itemTitleClasses" :style="{ color: theme?.textColor || '#292524' }">
-              {{ item.localizedName || item.name }}
-            </h3>
-            <span 
-              v-if="displaySettings?.showPrices" 
-              class="text-lg font-bold whitespace-nowrap"
-              :style="{ color: theme?.primaryColor || '#dc2626' }"
-            >
-              {{ formatPrice(item.price) }}
-            </span>
-          </div>
-          <p 
-            v-if="displaySettings?.showDescriptions && (item.localizedDescription || item.description)" 
-            class="text-sm leading-relaxed"
-            :style="{ color: theme?.textColor || '#292524', opacity: 0.8 }"
+        {{ category.localizedName || category.name }}
+      </h2>
+    </div>
+
+    <!-- Items Container -->
+    <div class="p-4 sm:p-6 space-y-4">
+      <div
+        v-for="item in category.items.filter(i => i.isAvailable)"
+        :key="item.id"
+        class="group relative rounded-2xl p-4 sm:p-6 border-2 border-neutral-100 hover:border-neutral-300 transition-all cursor-pointer hover:shadow-lg bg-white"
+        @click="$emit('item-click', item, category)"
+      >
+        <div class="flex flex-col sm:flex-row gap-4 sm:gap-6">
+          <!-- Item Image -->
+          <div
+            v-if="displaySettings?.showImages && (item.imageUrl || (item.images && item.images.length > 0))"
+            class="flex-shrink-0"
           >
-            {{ item.localizedDescription || item.description }}
-          </p>
+            <div class="relative rounded-xl overflow-hidden w-full sm:w-32 h-32 bg-neutral-100">
+              <img
+                :src="item.images?.[0] || item.imageUrl"
+                :alt="item.localizedName || item.name"
+                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+              />
+              <!-- Multi-image indicator -->
+              <div
+                v-if="item.images && item.images.length > 1"
+                class="absolute bottom-2 right-2 px-2 py-1 rounded-full bg-black/70 backdrop-blur-sm text-white text-xs font-bold flex items-center gap-1"
+              >
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                </svg>
+                {{ item.images.length }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Item Content -->
+          <div class="flex-1 space-y-2 min-w-0">
+            <div class="flex items-start justify-between gap-4">
+              <h3
+                class="text-xl sm:text-2xl font-bold group-hover:underline"
+                :style="{ color: settings?.textColor || '#1f2937' }"
+              >
+                {{ item.localizedName || item.name }}
+              </h3>
+              <span
+                v-if="displaySettings?.showPrices"
+                class="text-xl sm:text-2xl font-bold whitespace-nowrap"
+                :style="{ color: settings?.primaryColor || '#dc2626' }"
+              >
+                {{ formatPrice(item.price) }}
+              </span>
+            </div>
+
+            <p
+              v-if="displaySettings?.showDescriptions && (item.localizedDescription || item.description)"
+              class="text-base sm:text-lg leading-relaxed line-clamp-2"
+              :style="{ color: settings?.textColor || '#374151', opacity: 0.8 }"
+            >
+              {{ item.localizedDescription || item.description }}
+            </p>
+          </div>
+
+          <!-- Click Indicator -->
+          <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div
+              class="p-2 rounded-full"
+              :style="{ backgroundColor: `${settings?.primaryColor || '#dc2626'}20` }"
+            >
+              <svg
+                class="w-5 h-5"
+                :style="{ color: settings?.primaryColor || '#dc2626' }"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div v-if="category.items.length === 0" class="py-4 italic text-center opacity-70">
-        {{ t('menu.emptyCategoryMessage') }}
+      <!-- Empty Category -->
+      <div
+        v-if="category.items.filter(i => i.isAvailable).length === 0"
+        class="text-center py-12 text-neutral-500"
+      >
+        <svg class="w-16 h-16 mx-auto mb-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+        </svg>
+        <p class="text-lg font-medium">
+          {{ t('menu.emptyCategoryMessage') || 'No items in this category' }}
+        </p>
       </div>
     </div>
 
-    <div v-if="category.children.length" :class="childrenContainerClasses">
-      <PublicMenuCategoryTree 
-        :categories="category.children" 
-        :theme="theme"
+    <!-- Child Categories -->
+    <div v-if="category.children.length" class="px-4 sm:px-6 pb-6 space-y-6">
+      <PublicMenuCategoryTree
+        :categories="category.children"
+        :settings="settings"
         :displaySettings="displaySettings"
         :currency="currency"
+        @item-click="(item, cat) => $emit('item-click', item, cat)"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import type { MenuCategory } from '@/stores/restaurant';
-import type { TemplateTheme } from '~/stores/templates';
+import { computed } from 'vue'
+import type { MenuCategory, MenuItem } from '@/stores/restaurant'
 
 defineOptions({
-  name: 'PublicMenuCategoryTree',
-});
+  name: 'PublicMenuCategoryTree'
+})
 
 const props = withDefaults(defineProps<{
-  categories: MenuCategory[];
-  theme?: TemplateTheme | null;
+  categories: MenuCategory[]
+  settings?: {
+    primaryColor?: string
+    accentColor?: string
+    surfaceColor?: string
+    textColor?: string
+    fontFamily?: string
+  }
   displaySettings?: {
-    showPrices?: boolean;
-    showImages?: boolean;
-    showDescriptions?: boolean;
-    showCategories?: boolean;
-    enableSearch?: boolean;
-    enableFilters?: boolean;
-  } | null;
-  currency?: string;
+    showPrices?: boolean
+    showImages?: boolean
+    showDescriptions?: boolean
+    showCategories?: boolean
+  } | null
+  currency?: string
 }>(), {
-  theme: null,
+  settings: () => ({
+    primaryColor: '#dc2626',
+    accentColor: '#f59e0b',
+    surfaceColor: '#ffffff',
+    textColor: '#1f2937',
+    fontFamily: 'Inter'
+  }),
   displaySettings: null,
   currency: 'USD'
-});
+})
 
-const { locale, t } = useI18n({ useScope: 'global' });
+defineEmits<{
+  (e: 'item-click', item: MenuItem, category: MenuCategory): void
+}>()
+
+const { locale, t } = useI18n({ useScope: 'global' })
 
 const formatPrice = (price: number) => {
   try {
@@ -97,200 +180,19 @@ const formatPrice = (price: number) => {
       style: 'currency',
       currency: props.currency || 'USD',
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(price);
+      maximumFractionDigits: 2
+    }).format(price)
   } catch (error) {
-    return `${props.currency} ${price.toFixed(2)}`;
+    return `${props.currency} ${price.toFixed(2)}`
   }
-};
-
-// Dynamic classes based on theme
-const categoryClasses = computed(() => {
-  const borderRadius = {
-    none: 'rounded-none',
-    small: 'rounded-lg',
-    medium: 'rounded-xl',
-    large: 'rounded-2xl'
-  }[props.theme?.borderRadius || 'medium'];
-
-  const spacing = {
-    compact: 'p-4 mb-4',
-    normal: 'p-6 mb-6',
-    relaxed: 'p-8 mb-8'
-  }[props.theme?.spacing || 'normal'];
-
-  return `${borderRadius} ${spacing} shadow-lg border border-opacity-10`;
-});
-
-const categoryTitleClasses = computed(() => {
-  const size = {
-    small: 'text-xl',
-    medium: 'text-2xl',
-    large: 'text-3xl'
-  }[props.theme?.fontSize || 'medium'];
-
-  return `${size} font-bold mb-4 border-b pb-2 border-opacity-20`;
-});
-
-const itemsContainerClasses = computed(() => {
-  const spacing = {
-    compact: 'space-y-2',
-    normal: 'space-y-4',
-    relaxed: 'space-y-6'
-  }[props.theme?.spacing || 'normal'];
-
-  const layout = props.theme?.layout || 'list';
-  
-  if (layout === 'grid') {
-    const gap = {
-      compact: 'gap-3',
-      normal: 'gap-4',
-      relaxed: 'gap-6'
-    }[props.theme?.spacing || 'normal'];
-    return `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${gap}`;
-  }
-  
-  if (layout === 'cards') {
-    const gap = {
-      compact: 'gap-3',
-      normal: 'gap-4',
-      relaxed: 'gap-6'
-    }[props.theme?.spacing || 'normal'];
-    return `grid grid-cols-1 md:grid-cols-2 ${gap}`;
-  }
-  
-  return spacing;
-});
-
-const itemClasses = computed(() => {
-  const borderRadius = {
-    none: 'rounded-none',
-    small: 'rounded',
-    medium: 'rounded-lg',
-    large: 'rounded-xl'
-  }[props.theme?.borderRadius || 'medium'];
-
-  const layout = props.theme?.layout || 'list';
-  const cardStyle = props.theme?.cardStyle || 'modern';
-
-  // Grid layout - vertical cards
-  if (layout === 'grid') {
-    const padding = {
-      compact: 'p-3',
-      normal: 'p-4',
-      relaxed: 'p-6'
-    }[props.theme?.spacing || 'normal'];
-
-    if (cardStyle === 'modern') {
-      return `flex flex-col gap-3 ${padding} border-2 ${borderRadius} hover:shadow-xl transition-all duration-300 hover:-translate-y-1`;
-    } else if (cardStyle === 'minimal') {
-      return `flex flex-col gap-3 ${padding} border ${borderRadius} hover:shadow-md transition-all`;
-    } else { // classic
-      return `flex flex-col gap-3 ${padding} border ${borderRadius} shadow-sm hover:shadow-lg transition-all`;
-    }
-  }
-
-  // Cards layout - horizontal cards
-  if (layout === 'cards') {
-    const padding = {
-      compact: 'p-3',
-      normal: 'p-4',
-      relaxed: 'p-5'
-    }[props.theme?.spacing || 'normal'];
-
-    return `flex flex-col sm:flex-row gap-4 ${padding} border ${borderRadius} hover:shadow-lg transition-all`;
-  }
-
-  // List layout - simple rows
-  const padding = {
-    compact: 'p-2',
-    normal: 'p-4',
-    relaxed: 'p-5'
-  }[props.theme?.spacing || 'normal'];
-
-  return `flex flex-col sm:flex-row items-start gap-4 ${padding} hover:bg-opacity-5 hover:bg-black ${borderRadius} transition-all`;
-});
-
-const imageClasses = computed(() => {
-  const shape = {
-    square: 'rounded-none',
-    rounded: 'rounded-lg',
-    circle: 'rounded-full'
-  }[props.theme?.imageShape || 'rounded'];
-
-  const layout = props.theme?.layout || 'list';
-  
-  // Different sizes for different layouts
-  let size = '';
-  if (layout === 'grid') {
-    size = {
-      small: 'h-32 w-full',
-      medium: 'h-40 w-full',
-      large: 'h-48 w-full'
-    }[props.theme?.imageSize || 'medium'];
-  } else if (layout === 'cards') {
-    size = {
-      small: 'h-24 w-24',
-      medium: 'h-32 w-32',
-      large: 'h-40 w-40'
-    }[props.theme?.imageSize || 'medium'];
-  } else {
-    size = {
-      small: 'h-16 w-16',
-      medium: 'h-20 w-20',
-      large: 'h-24 w-24'
-    }[props.theme?.imageSize || 'medium'];
-  }
-
-  return `${size} ${shape} object-cover`;
-});
-
-const itemTitleClasses = computed(() => {
-  const size = {
-    small: 'text-base',
-    medium: 'text-lg',
-    large: 'text-xl'
-  }[props.theme?.fontSize || 'medium'];
-
-  return `${size} font-semibold`;
-});
-
-// Dynamic styles for full customization
-const categoryStyle = computed(() => ({
-  backgroundColor: props.theme?.surfaceColor || '#ffffff',
-  color: props.theme?.textColor || '#292524',
-  fontFamily: props.theme?.fontFamily || 'Inter'
-}));
-
-const categoryTitleStyle = computed(() => ({
-  color: props.theme?.primaryColor || '#dc2626',
-  borderColor: props.theme?.primaryColor || '#dc2626',
-  fontFamily: props.theme?.headingFont || props.theme?.fontFamily || 'Inter'
-}));
-
-const itemStyle = computed(() => {
-  const layout = props.theme?.layout || 'list';
-  const baseStyle: any = {
-    backgroundColor: props.theme?.surfaceColor || '#ffffff',
-    fontFamily: props.theme?.bodyFont || props.theme?.fontFamily || 'Inter'
-  };
-
-  // For grid/cards layout, add background and border
-  if (layout === 'grid' || layout === 'cards') {
-    baseStyle.backgroundColor = props.theme?.surfaceColor || '#ffffff';
-    baseStyle.borderColor = props.theme?.primaryColor || '#dc2626';
-  }
-
-  return baseStyle;
-});
-
-const childrenContainerClasses = computed(() => {
-  const spacing = {
-    compact: 'mt-4 space-y-2',
-    normal: 'mt-6 space-y-4',
-    relaxed: 'mt-8 space-y-6'
-  }[props.theme?.spacing || 'normal'];
-
-  return spacing;
-});
+}
 </script>
+
+<style scoped>
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+</style>
