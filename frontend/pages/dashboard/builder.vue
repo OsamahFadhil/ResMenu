@@ -218,6 +218,7 @@ definePageMeta({
 const authStore = useAuthStore()
 const restaurantStore = useRestaurantStore()
 const templateStore = useTemplateStore()
+const toast = useToast()
 const { $api } = useNuxtApp()
 
 const loading = ref(true)
@@ -276,7 +277,7 @@ const saveReorder = async () => {
 
     showSavedFeedback()
   } catch (error) {
-    console.error('Failed to reorder categories:', error)
+    toast.error('Failed to reorder categories')
   } finally {
     saving.value = false
   }
@@ -292,7 +293,7 @@ const reorderItems = async (categoryId: string, reorderedItems: MenuItem[]) => {
 
     showSavedFeedback()
   } catch (error) {
-    console.error('Failed to reorder items:', error)
+    toast.error('Failed to reorder items')
   } finally {
     saving.value = false
   }
@@ -313,7 +314,7 @@ const addCategory = async () => {
 
     await loadCategories()
   } catch (error) {
-    console.error('Failed to create category:', error)
+    toast.error('Failed to create category')
   }
 }
 
@@ -333,7 +334,7 @@ const updateCategory = async (category: MenuCategory) => {
 
     showSavedFeedback()
   } catch (error) {
-    console.error('Failed to update category:', error)
+    toast.error('Failed to update category')
   } finally {
     saving.value = false
   }
@@ -348,7 +349,7 @@ const deleteCategory = async (categoryId: string) => {
     await restaurantStore.deleteCategory(categoryId, authStore.restaurantId || '')
     await loadCategories()
   } catch (error) {
-    console.error('Failed to delete category:', error)
+    toast.error('Failed to delete category')
   }
 }
 
@@ -403,7 +404,7 @@ const saveNewItem = async () => {
     await loadCategories()
     closeItemDialog()
   } catch (error) {
-    console.error('Failed to create item:', error)
+    toast.error('Failed to create item')
   }
 }
 
@@ -419,7 +420,7 @@ const loadCategories = async () => {
     const loadedCategories = await restaurantStore.fetchCategories(authStore.restaurantId)
     categories.value = loadedCategories
   } catch (error) {
-    console.error('Failed to load categories:', error)
+    toast.error('Failed to load categories')
   } finally {
     loading.value = false
   }

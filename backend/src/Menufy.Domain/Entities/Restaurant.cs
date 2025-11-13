@@ -32,6 +32,7 @@ public class Restaurant : BaseEntity
     public QRCode? QRCode { get; set; }
     public ICollection<MenuTemplate> MenuTemplates { get; set; } = new List<MenuTemplate>();
     public MenuTemplate? ActiveTemplate { get; set; }
+    public ICollection<MenuDesign> MenuDesigns { get; set; } = new List<MenuDesign>();
 
     // Helper methods to get translated content
     public string GetTranslatedName(string language = "en")

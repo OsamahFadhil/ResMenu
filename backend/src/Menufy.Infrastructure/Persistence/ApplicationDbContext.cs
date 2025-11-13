@@ -18,6 +18,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<MenuCategory> MenuCategories => Set<MenuCategory>();
     public DbSet<MenuItem> MenuItems => Set<MenuItem>();
     public DbSet<MenuTemplate> MenuTemplates => Set<MenuTemplate>();
+    public DbSet<MenuDesign> MenuDesigns => Set<MenuDesign>();
     public DbSet<QRCode> QRCodes => Set<QRCode>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
@@ -31,6 +32,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         modelBuilder.Entity<MenuCategory>().HasQueryFilter(mc => !mc.IsDeleted);
         modelBuilder.Entity<MenuItem>().HasQueryFilter(mi => !mi.IsDeleted);
         modelBuilder.Entity<MenuTemplate>().HasQueryFilter(mt => !mt.IsDeleted);
+        modelBuilder.Entity<MenuDesign>().HasQueryFilter(md => !md.IsDeleted);
         modelBuilder.Entity<QRCode>().HasQueryFilter(q => !q.IsDeleted);
         modelBuilder.Entity<RefreshToken>().HasQueryFilter(rt => !rt.IsDeleted);
 

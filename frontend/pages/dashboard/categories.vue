@@ -330,6 +330,7 @@ definePageMeta({
 const { t, locale } = useI18n({ useScope: 'global' })
 const authStore = useAuthStore()
 const restaurantStore = useRestaurantStore()
+const toast = useToast()
 
 const loading = ref(false)
 const saving = ref(false)
@@ -460,7 +461,7 @@ const openCreateModal = (event?: Event) => {
   event?.stopPropagation()
   
   if (!restaurantId.value) {
-    alert(t('messages.errorOccurred') || 'Restaurant ID not found. Please login again.')
+    toast.error(t('messages.errorOccurred') || 'Restaurant ID not found. Please login again.')
     return
   }
   
@@ -471,7 +472,7 @@ const openCreateModal = (event?: Event) => {
 
 const openAddItemModal = (categoryId: string) => {
   if (!categoryId) {
-    alert(t('messages.errorOccurred') || 'Category ID not found.')
+    toast.error(t('messages.errorOccurred') || 'Category ID not found.')
     return
   }
   selectedCategoryForItem.value = categoryId
@@ -509,9 +510,9 @@ const loadCategories = async () => {
   try {
     await restaurantStore.fetchCategories(restaurantId.value, locale.value)
   } catch (error: any) {
-    console.error('Failed to load categories:', error)
+    toast.error('Failed to load categories')
     const errorMessage = error?.response?.data?.message || error?.message || t('messages.errorOccurred') || 'Failed to load categories'
-    alert(errorMessage)
+    toast.error(errorMessage)
   } finally {
     loading.value = false
   }
@@ -580,11 +581,11 @@ const deleteCategory = async (category: MenuCategory) => {
   try {
     await restaurantStore.deleteCategory(category.id, restaurantId.value, locale.value)
     await loadCategories()
-    alert(t('messages.success') || 'Category deleted successfully!')
+    toast.success(t('messages.success') || 'Category deleted successfully!')
   } catch (error: any) {
-    console.error('Failed to delete category:', error)
+    toast.error('Failed to delete category')
     const errorMessage = error?.response?.data?.message || error?.message || t('messages.errorOccurred') || 'Failed to delete category'
-    alert(errorMessage)
+    toast.error(errorMessage)
   }
 }
 
@@ -609,7 +610,7 @@ const saveCategory = async () => {
   }
 
   if (!payload.name) {
-    alert(t('validation.required'))
+    toast.error(t('validation.required'))
     return
   }
 
@@ -623,11 +624,11 @@ const saveCategory = async () => {
     await loadCategories()
     showCreateModal.value = false
     resetForm()
-    alert(t('messages.success') || 'Category saved successfully!')
+    toast.success(t('messages.success') || 'Category saved successfully!')
   } catch (error: any) {
-    console.error('Failed to save category:', error)
+    toast.error('Failed to save category')
     const errorMessage = error?.response?.data?.message || error?.message || t('messages.errorOccurred') || 'Failed to save category'
-    alert(errorMessage)
+    toast.error(errorMessage)
   } finally {
     saving.value = false
   }
@@ -655,9 +656,9 @@ const handleImageUpload = async (file: File) => {
       throw new Error(response.data.message || 'Upload failed')
     }
   } catch (error: any) {
-    console.error('Failed to upload image:', error)
+    toast.error('Failed to upload image')
     const errorMessage = error?.response?.data?.message || error?.response?.data?.error || error?.message || 'Failed to upload image'
-    alert(errorMessage)
+    toast.error(errorMessage)
     newItemForm.value.imageUrl = ''
   } finally {
     uploadingImage.value = false
@@ -666,18 +667,18 @@ const handleImageUpload = async (file: File) => {
 
 const saveNewItem = async () => {
   if (!selectedCategoryForItem.value) {
-    alert(t('messages.errorOccurred') || 'Category not selected.')
+    toast.error(t('messages.errorOccurred') || 'Category not selected.')
     return
   }
 
   if (!newItemForm.value.name.trim()) {
-    alert(t('validation.required') || 'Item name is required')
+    toast.error(t('validation.required') || 'Item name is required')
     return
   }
 
   const price = Number(newItemForm.value.price)
   if (!price || price <= 0 || !isFinite(price)) {
-    alert(t('validation.required') || 'Price must be greater than 0')
+    toast.error(t('validation.required') || 'Price must be greater than 0')
     return
   }
 
@@ -705,11 +706,11 @@ const saveNewItem = async () => {
     showAddItemModal.value = false
     selectedCategoryForItem.value = null
     await loadCategories()
-    alert(t('messages.success') || 'Menu item created successfully!')
+    toast.success(t('messages.success') || 'Menu item created successfully!')
   } catch (error: any) {
-    console.error('Failed to create menu item:', error)
+    toast.error('Failed to create menu item')
     const errorMessage = error?.response?.data?.message || error?.message || t('messages.errorOccurred') || 'Failed to create menu item'
-    alert(errorMessage)
+    toast.error(errorMessage)
   } finally {
     saving.value = false
   }
@@ -722,7 +723,7 @@ const createMenuItemForCategory = async (categoryId: string) => {
   }
 
   if (!formState.name.trim()) {
-    alert(t('validation.required') || 'Item name is required')
+    toast.error(t('validation.required') || 'Item name is required')
     return
   }
 
@@ -739,9 +740,9 @@ const createMenuItemForCategory = async (categoryId: string) => {
     showItemForms.value[categoryId] = false
     await loadCategories()
   } catch (error: any) {
-    console.error('Failed to create menu item:', error)
+    toast.error('Failed to create menu item')
     const errorMessage = error?.response?.data?.message || error?.message || t('messages.errorOccurred') || 'Failed to create menu item'
-    alert(errorMessage)
+    toast.error(errorMessage)
   }
 }
 

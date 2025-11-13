@@ -10,6 +10,7 @@ public interface IApplicationDbContext
     DbSet<MenuCategory> MenuCategories { get; }
     DbSet<MenuItem> MenuItems { get; }
     DbSet<MenuTemplate> MenuTemplates { get; }
+    DbSet<MenuDesign> MenuDesigns { get; }
     DbSet<QRCode> QRCodes { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
 

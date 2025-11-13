@@ -31,6 +31,13 @@ public class GetPublicMenuQueryHandler : IRequestHandler<GetPublicMenuQuery, Res
             return Result<PublicMenuDto>.FailureResult("Restaurant not found");
         }
 
+        // Fetch active MenuDesign (new system)
+        var activeDesign = await _context.MenuDesigns
+            .Where(md => md.RestaurantId == restaurant.Id && md.IsActive)
+            .OrderByDescending(md => md.CreatedAt)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(cancellationToken);
+
         var categories = await _context.MenuCategories
             .Where(c => c.RestaurantId == restaurant.Id)
             .OrderBy(c => c.DisplayOrder)
@@ -47,28 +54,48 @@ public class GetPublicMenuQueryHandler : IRequestHandler<GetPublicMenuQuery, Res
             ? restaurant.GetTranslatedName()
             : restaurant.GetTranslatedName(request.Language);
 
-        // Determine theme (priority: CustomTheme > ActiveTemplate.Theme > Default)
+        // Determine theme (priority: ActiveDesign.GlobalTheme > CustomTheme > ActiveTemplate.Theme > Default)
         MenuTemplateThemeDto? theme = null;
-        if (!string.IsNullOrWhiteSpace(restaurant.CustomTheme))
+        MenuDesigns.DTOs.LayoutConfigurationDto? layoutConfig = null;
+        
+        if (activeDesign != null)
         {
+            // Use MenuDesign system (new)
             try
             {
-                theme = JsonSerializer.Deserialize<MenuTemplateThemeDto>(restaurant.CustomTheme);
+                theme = JsonSerializer.Deserialize<MenuTemplateThemeDto>(activeDesign.GlobalTheme);
+                layoutConfig = JsonSerializer.Deserialize<MenuDesigns.DTOs.LayoutConfigurationDto>(activeDesign.LayoutConfiguration);
             }
             catch (JsonException)
             {
-                // Log error and continue with default
+                // Log error and fall back to legacy system
             }
         }
-        else if (restaurant.ActiveTemplate?.Theme != null)
+        
+        // Fallback to legacy theme system if no active design
+        if (theme == null)
         {
-            try
+            if (!string.IsNullOrWhiteSpace(restaurant.CustomTheme))
             {
-                theme = JsonSerializer.Deserialize<MenuTemplateThemeDto>(restaurant.ActiveTemplate.Theme);
+                try
+                {
+                    theme = JsonSerializer.Deserialize<MenuTemplateThemeDto>(restaurant.CustomTheme);
+                }
+                catch (JsonException)
+                {
+                    // Log error and continue with default
+                }
             }
-            catch (JsonException)
+            else if (restaurant.ActiveTemplate?.Theme != null)
             {
-                // Log error and continue with default
+                try
+                {
+                    theme = JsonSerializer.Deserialize<MenuTemplateThemeDto>(restaurant.ActiveTemplate.Theme);
+                }
+                catch (JsonException)
+                {
+                    // Log error and continue with default
+                }
             }
         }
 
@@ -112,6 +139,7 @@ public class GetPublicMenuQueryHandler : IRequestHandler<GetPublicMenuQuery, Res
             Theme = theme,
             DisplaySettings = displaySettings,
             Currency = restaurant.Currency ?? "USD",
+            LayoutConfiguration = layoutConfig, // New design system
             Categories = categoriesDto
         };
 

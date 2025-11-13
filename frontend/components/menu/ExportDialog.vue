@@ -190,6 +190,7 @@ const emit = defineEmits<{
 
 const { exportToPDF, exportToHTML, printMenu } = useMenuExport()
 
+const toast = useToast()
 const selectedFormat = ref<'pdf' | 'html' | 'print'>('pdf')
 const exporting = ref(false)
 const fileName = ref(props.restaurantName.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_menu')
@@ -256,11 +257,11 @@ const handleExport = async () => {
       )
     }
 
+    toast.success('Menu exported successfully!')
     emit('exported')
     emit('close')
   } catch (error) {
-    console.error('Export failed:', error)
-    alert('Failed to export menu. Please try again.')
+    toast.error('Failed to export menu. Please try again.')
   } finally {
     exporting.value = false
   }

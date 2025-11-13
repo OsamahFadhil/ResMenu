@@ -75,6 +75,60 @@ namespace Menufy.Infrastructure.Migrations
                     b.ToTable("MenuCategories", (string)null);
                 });
 
+            modelBuilder.Entity("Menufy.Domain.Entities.MenuDesign", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("GlobalTheme")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LayoutConfiguration")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid>("RestaurantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Version")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_MenuDesigns_CreatedAt");
+
+                    b.HasIndex("RestaurantId", "IsActive")
+                        .HasDatabaseName("IX_MenuDesigns_RestaurantId_IsActive");
+
+                    b.ToTable("MenuDesigns", (string)null);
+                });
+
             modelBuilder.Entity("Menufy.Domain.Entities.MenuItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -150,11 +204,17 @@ namespace Menufy.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsDesignOnly")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsPublished")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastUsedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LayoutConfiguration")
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -443,6 +503,17 @@ namespace Menufy.Infrastructure.Migrations
                     b.Navigation("Restaurant");
                 });
 
+            modelBuilder.Entity("Menufy.Domain.Entities.MenuDesign", b =>
+                {
+                    b.HasOne("Menufy.Domain.Entities.Restaurant", "Restaurant")
+                        .WithMany("MenuDesigns")
+                        .HasForeignKey("RestaurantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Restaurant");
+                });
+
             modelBuilder.Entity("Menufy.Domain.Entities.MenuItem", b =>
                 {
                     b.HasOne("Menufy.Domain.Entities.MenuCategory", "Category")
@@ -514,6 +585,8 @@ namespace Menufy.Infrastructure.Migrations
             modelBuilder.Entity("Menufy.Domain.Entities.Restaurant", b =>
                 {
                     b.Navigation("MenuCategories");
+
+                    b.Navigation("MenuDesigns");
 
                     b.Navigation("MenuTemplates");
 

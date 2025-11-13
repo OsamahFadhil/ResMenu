@@ -92,12 +92,6 @@
               {{ $t('menu.regenerateSampleMenu') }}
             </UiButton>
           </div>
-          <Alert v-if="generatorSuccess" class="mt-4" variant="success" :dismissible="true" @dismiss="clearGeneratorSuccess">
-            {{ generatorSuccess }}
-          </Alert>
-          <Alert v-if="generatorError" class="mt-4" variant="error" :dismissible="true" @dismiss="clearGeneratorError">
-            {{ generatorError }}
-          </Alert>
         </div>
 
         <div class="rounded-3xl border border-orange-100 bg-white p-6 shadow-sm">
@@ -132,10 +126,9 @@ definePageMeta({
 const authStore = useAuthStore();
 const restaurantStore = useRestaurantStore();
 const { t, locale } = useI18n({ useScope: 'global' });
+const toast = useToast();
 
 const generatorLoading = ref(false);
-const generatorError = ref('');
-const generatorSuccess = ref('');
 
 const countCategories = (categories: MenuCategory[]): number =>
   categories.reduce((total, category) => total + 1 + countCategories(category.children), 0);
@@ -172,13 +165,11 @@ const countTotalItems = computed(() => stats.value.totalItems);
 const handleQuickGenerate = async () => {
   const restaurantId = authStore.restaurantId;
   if (!restaurantId) {
-    generatorError.value = t('messages.errorOccurred');
+    toast.error(t('messages.errorOccurred'));
     return;
   }
 
   generatorLoading.value = true;
-  generatorSuccess.value = '';
-  generatorError.value = '';
 
   try {
     await restaurantStore.generateMenu(restaurantId, {
@@ -186,20 +177,12 @@ const handleQuickGenerate = async () => {
       templateKey: 'default',
       languageCodes: [locale.value],
     });
-    generatorSuccess.value = t('menu.generatorSuccess');
+    toast.success(t('menu.generatorSuccess'));
   } catch (error: any) {
-    generatorError.value = error.message || t('messages.errorOccurred');
+    toast.error(error.message || t('messages.errorOccurred'));
   } finally {
     generatorLoading.value = false;
   }
-};
-
-const clearGeneratorSuccess = () => {
-  generatorSuccess.value = '';
-};
-
-const clearGeneratorError = () => {
-  generatorError.value = '';
 };
 
 onMounted(async () => {

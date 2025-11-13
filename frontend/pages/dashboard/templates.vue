@@ -291,6 +291,7 @@ const { t } = useI18n({ useScope: 'global' })
 const templateStore = useTemplateStore()
 const restaurantStore = useRestaurantStore()
 const authStore = useAuthStore()
+const toast = useToast()
 
 const showModal = ref(false)
 const saving = ref(false)
@@ -373,12 +374,12 @@ const saveTemplate = async () => {
   console.log('Form data:', JSON.stringify(form.value, null, 2))
   
   if (!form.value.name.trim()) {
-    alert('Please enter a template name')
+    toast.error('Please enter a template name')
     return
   }
 
   if (form.value.structure.categories.length === 0) {
-    alert('Please add at least one category')
+    toast.error('Please add at least one category')
     return
   }
 
@@ -389,19 +390,19 @@ const saveTemplate = async () => {
     if (editingTemplate.value) {
       console.log('Updating template:', editingTemplate.value.id)
       await templateStore.updateTemplate(editingTemplate.value.id, form.value)
-      alert('Template updated successfully!')
+      toast.success('Template updated successfully!')
     } else {
       console.log('Creating new template...')
       const result = await templateStore.createTemplate(form.value)
       console.log('Template created:', result)
-      alert('Template created successfully!')
+      toast.success('Template created successfully!')
     }
     showModal.value = false
     form.value = createBlankForm()
   } catch (error: any) {
     console.error('Failed to save template:', error)
     console.error('Error details:', error.response?.data || error.message)
-    alert(error.message || 'Failed to save template')
+    toast.error(error.message || 'Failed to save template')
   } finally {
     saving.value = false
     console.log('=== SAVE TEMPLATE FINISHED ===')
@@ -415,17 +416,17 @@ const deleteTemplate = async (id: string) => {
 
   try {
     await templateStore.deleteTemplate(id)
-    alert('Template deleted successfully!')
+    toast.success('Template deleted successfully!')
   } catch (error: any) {
     console.error('Failed to delete template:', error)
-    alert(error.message || 'Failed to delete template')
+    toast.error(error.message || 'Failed to delete template')
   }
 }
 
 const generateFromTemplate = async (templateId: string) => {
   const restaurantId = authStore.restaurantId
   if (!restaurantId) {
-    alert('Restaurant not found')
+    toast.error('Restaurant not found')
     return
   }
 
@@ -438,10 +439,10 @@ const generateFromTemplate = async (templateId: string) => {
       templateId,
       overwriteExisting: false
     })
-    alert('Menu generated successfully!')
+    toast.success('Menu generated successfully!')
   } catch (error: any) {
     console.error('Failed to generate menu:', error)
-    alert(error.message || 'Failed to generate menu')
+    toast.error(error.message || 'Failed to generate menu')
   }
 }
 

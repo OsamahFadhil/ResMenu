@@ -37,6 +37,10 @@ public class MenuTemplateThemeDto
     public string BackgroundColor { get; set; } = "#fafaf9";
     public string SurfaceColor { get; set; } = "#ffffff";
     public string TextColor { get; set; } = "#292524";
+    public string BackgroundType { get; set; } = "color"; // color, image, gradient
+    public string? BackgroundImageUrl { get; set; }
+    public string BackgroundOverlay { get; set; } = "none"; // none, light, dark
+    public string? BackgroundGradient { get; set; }
 
     // Typography
     public string FontFamily { get; set; } = "Inter";

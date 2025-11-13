@@ -4,7 +4,7 @@
       <!-- Header -->
       <div>
         <h1 class="text-2xl font-bold text-neutral-900">Restaurant Settings</h1>
-        <p class="mt-1 text-neutral-600">Manage your menu appearance and preferences</p>
+        <p class="mt-1 text-neutral-600">Manage your restaurant's basic information and preferences</p>
       </div>
 
       <!-- Error State -->
@@ -20,169 +20,181 @@
 
       <!-- Settings Content -->
       <div v-else class="space-y-6">
-        <!-- Active Template -->
+        <!-- Restaurant Info -->
         <Card>
           <template #header>
-            <div class="flex justify-between items-center">
-              <h2 class="text-lg font-semibold text-neutral-900">Active Template</h2>
-              <Badge v-if="settings.activeTemplateId" variant="primary">Active</Badge>
-            </div>
+            <h2 class="text-lg font-semibold text-neutral-900">Restaurant Information</h2>
           </template>
-            <div class="space-y-4">
-              <p class="text-sm text-neutral-600">
-                Select a template to use as the base for your menu design
-              </p>
-              
-              <!-- No Templates State -->
-              <div v-if="templates.length === 0" class="text-center py-8 text-neutral-500">
-                <p>No templates available. Create a template first in the Templates page.</p>
-              </div>
+          <div class="space-y-6">
+            <!-- Name -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                v-model="form.name"
+                label="Restaurant Name"
+                required
+                placeholder="My Restaurant"
+              />
+              <Input
+                v-model="form.nameAr"
+                label="Restaurant Name (Arabic)"
+                placeholder="مطعمي"
+              />
+            </div>
 
-              <!-- Templates Grid -->
-              <div v-else class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <div
-                  v-for="template in templates"
-                  :key="template.id"
-                  @click="selectTemplate(template.id)"
-                  :class="[
-                    'relative p-4 border-2 rounded-xl cursor-pointer transition-all',
-                    settings.activeTemplateId === template.id
-                      ? 'border-primary-600 bg-primary-50'
-                      : 'border-neutral-200 hover:border-neutral-300 hover:shadow-md'
-                  ]"
-                >
-                  <div class="flex justify-between items-start">
-                    <div>
-                      <h3 class="font-semibold text-neutral-900">{{ template.name }}</h3>
-                      <p class="mt-1 text-sm text-neutral-600">{{ template.description || 'No description' }}</p>
-                      <div class="flex gap-2 items-center mt-2 text-xs text-neutral-500">
-                        <span>{{ template.structure.categories.length }} categories</span>
-                      </div>
-                    </div>
-                    <div v-if="settings.activeTemplateId === template.id" class="flex-shrink-0">
-                      <svg class="w-6 h-6 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                  </div>
+            <!-- Logo Upload -->
+            <div>
+              <label class="block text-sm font-medium text-neutral-700 mb-2">
+                Logo
+              </label>
+              <div class="flex items-center gap-4">
+                <div v-if="form.logoUrl" class="w-20 h-20 rounded-lg overflow-hidden border-2 border-neutral-200">
+                  <img :src="form.logoUrl" alt="Restaurant logo" class="w-full h-full object-cover" />
+                </div>
+                <div v-else class="w-20 h-20 rounded-lg bg-neutral-100 flex items-center justify-center border-2 border-dashed border-neutral-300">
+                  <svg class="w-8 h-8 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <Input
+                    v-model="form.logoUrl"
+                    placeholder="https://example.com/logo.png"
+                    label="Logo URL"
+                  />
+                  <p class="mt-1 text-xs text-neutral-500">Enter a URL to your logo image</p>
                 </div>
               </div>
+            </div>
 
-              <div v-if="settings.activeTemplateId" class="pt-4 border-t">
-                <UiButton @click="applyCurrentTemplate" :loading="applying" variant="primary">
-                  Apply Template to Menu
-                </UiButton>
+            <!-- Contact Information -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                v-model="form.contactPhone"
+                label="Phone Number"
+                type="tel"
+                placeholder="+1 234 567 8900"
+              />
+              <Input
+                v-model="form.contactEmail"
+                label="Email Address"
+                type="email"
+                placeholder="info@restaurant.com"
+              />
+            </div>
+
+            <!-- Address -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-neutral-700 mb-1">
+                  Address
+                </label>
+                <textarea
+                  v-model="form.address"
+                  rows="3"
+                  class="block w-full rounded-lg border-neutral-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-4 py-2"
+                  placeholder="123 Main St, City, Country"
+                ></textarea>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-neutral-700 mb-1">
+                  Address (Arabic)
+                </label>
+                <textarea
+                  v-model="form.addressAr"
+                  rows="3"
+                  class="block w-full rounded-lg border-neutral-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-4 py-2"
+                  placeholder="١٢٣ شارع الرئيسي، المدينة، الدولة"
+                  dir="rtl"
+                ></textarea>
               </div>
             </div>
-        </Card>
-
-        <!-- Custom Theme -->
-        <Card>
-          <template #header>
-            <div class="flex justify-between items-center">
-              <h2 class="text-lg font-semibold text-neutral-900">Custom Theme</h2>
-              <button
-                @click="resetTheme"
-                class="text-sm text-neutral-600 hover:text-neutral-900"
-              >
-                Reset to Default
-              </button>
-            </div>
-          </template>
-            <div class="space-y-6">
-              <p class="text-sm text-neutral-600">
-                Customize the appearance of your public menu
-              </p>
-              
-              <ThemeCustomizer v-if="settings.customTheme" v-model="settings.customTheme" />
-              <LayoutCustomizer v-if="settings.customTheme" v-model="settings.customTheme" />
-            </div>
+          </div>
         </Card>
 
         <!-- Display Settings -->
         <Card>
           <template #header>
-            <h2 class="text-lg font-semibold text-neutral-900">Display Settings</h2>
+            <h2 class="text-lg font-semibold text-neutral-900">Menu Display Preferences</h2>
           </template>
-            <div class="space-y-4">
-              <p class="mb-4 text-sm text-neutral-600">
-                Control what information is shown on your public menu
-              </p>
+          <div class="space-y-4">
+            <p class="text-sm text-neutral-600">
+              Control what information is shown on your public menu
+            </p>
 
-              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <label class="flex gap-3 items-center p-3 rounded-lg border cursor-pointer border-neutral-200 hover:bg-neutral-50">
-                  <input
-                    type="checkbox"
-                    v-model="settings.displaySettings.showPrices"
-                    class="w-4 h-4 rounded text-primary-600 border-neutral-300 focus:ring-primary-500"
-                  />
-                  <div>
-                    <div class="font-medium text-neutral-900">Show Prices</div>
-                    <div class="text-xs text-neutral-600">Display item prices on the menu</div>
-                  </div>
-                </label>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <label class="flex gap-3 items-center p-3 rounded-lg border cursor-pointer border-neutral-200 hover:bg-neutral-50">
+                <input
+                  type="checkbox"
+                  v-model="form.displaySettings.showPrices"
+                  class="w-4 h-4 rounded text-primary-600 border-neutral-300 focus:ring-primary-500"
+                />
+                <div>
+                  <div class="font-medium text-neutral-900">Show Prices</div>
+                  <div class="text-xs text-neutral-600">Display item prices on the menu</div>
+                </div>
+              </label>
 
-                <label class="flex gap-3 items-center p-3 rounded-lg border cursor-pointer border-neutral-200 hover:bg-neutral-50">
-                  <input
-                    type="checkbox"
-                    v-model="settings.displaySettings.showImages"
-                    class="w-4 h-4 rounded text-primary-600 border-neutral-300 focus:ring-primary-500"
-                  />
-                  <div>
-                    <div class="font-medium text-neutral-900">Show Images</div>
-                    <div class="text-xs text-neutral-600">Display item images</div>
-                  </div>
-                </label>
+              <label class="flex gap-3 items-center p-3 rounded-lg border cursor-pointer border-neutral-200 hover:bg-neutral-50">
+                <input
+                  type="checkbox"
+                  v-model="form.displaySettings.showImages"
+                  class="w-4 h-4 rounded text-primary-600 border-neutral-300 focus:ring-primary-500"
+                />
+                <div>
+                  <div class="font-medium text-neutral-900">Show Images</div>
+                  <div class="text-xs text-neutral-600">Display item images</div>
+                </div>
+              </label>
 
-                <label class="flex gap-3 items-center p-3 rounded-lg border cursor-pointer border-neutral-200 hover:bg-neutral-50">
-                  <input
-                    type="checkbox"
-                    v-model="settings.displaySettings.showDescriptions"
-                    class="w-4 h-4 rounded text-primary-600 border-neutral-300 focus:ring-primary-500"
-                  />
-                  <div>
-                    <div class="font-medium text-neutral-900">Show Descriptions</div>
-                    <div class="text-xs text-neutral-600">Display item descriptions</div>
-                  </div>
-                </label>
+              <label class="flex gap-3 items-center p-3 rounded-lg border cursor-pointer border-neutral-200 hover:bg-neutral-50">
+                <input
+                  type="checkbox"
+                  v-model="form.displaySettings.showDescriptions"
+                  class="w-4 h-4 rounded text-primary-600 border-neutral-300 focus:ring-primary-500"
+                />
+                <div>
+                  <div class="font-medium text-neutral-900">Show Descriptions</div>
+                  <div class="text-xs text-neutral-600">Display item descriptions</div>
+                </div>
+              </label>
 
-                <label class="flex gap-3 items-center p-3 rounded-lg border cursor-pointer border-neutral-200 hover:bg-neutral-50">
-                  <input
-                    type="checkbox"
-                    v-model="settings.displaySettings.showCategories"
-                    class="w-4 h-4 rounded text-primary-600 border-neutral-300 focus:ring-primary-500"
-                  />
-                  <div>
-                    <div class="font-medium text-neutral-900">Show Categories</div>
-                    <div class="text-xs text-neutral-600">Display category sections</div>
-                  </div>
-                </label>
+              <label class="flex gap-3 items-center p-3 rounded-lg border cursor-pointer border-neutral-200 hover:bg-neutral-50">
+                <input
+                  type="checkbox"
+                  v-model="form.displaySettings.showCategories"
+                  class="w-4 h-4 rounded text-primary-600 border-neutral-300 focus:ring-primary-500"
+                />
+                <div>
+                  <div class="font-medium text-neutral-900">Show Categories</div>
+                  <div class="text-xs text-neutral-600">Display category sections</div>
+                </div>
+              </label>
 
-                <label class="flex gap-3 items-center p-3 rounded-lg border cursor-pointer border-neutral-200 hover:bg-neutral-50">
-                  <input
-                    type="checkbox"
-                    v-model="settings.displaySettings.enableSearch"
-                    class="w-4 h-4 rounded text-primary-600 border-neutral-300 focus:ring-primary-500"
-                  />
-                  <div>
-                    <div class="font-medium text-neutral-900">Enable Search</div>
-                    <div class="text-xs text-neutral-600">Allow customers to search items</div>
-                  </div>
-                </label>
+              <label class="flex gap-3 items-center p-3 rounded-lg border cursor-pointer border-neutral-200 hover:bg-neutral-50">
+                <input
+                  type="checkbox"
+                  v-model="form.displaySettings.enableSearch"
+                  class="w-4 h-4 rounded text-primary-600 border-neutral-300 focus:ring-primary-500"
+                />
+                <div>
+                  <div class="font-medium text-neutral-900">Enable Search</div>
+                  <div class="text-xs text-neutral-600">Allow customers to search items</div>
+                </div>
+              </label>
 
-                <label class="flex gap-3 items-center p-3 rounded-lg border cursor-pointer border-neutral-200 hover:bg-neutral-50">
-                  <input
-                    type="checkbox"
-                    v-model="settings.displaySettings.enableFilters"
-                    class="w-4 h-4 rounded text-primary-600 border-neutral-300 focus:ring-primary-500"
-                  />
-                  <div>
-                    <div class="font-medium text-neutral-900">Enable Filters</div>
-                    <div class="text-xs text-neutral-600">Allow filtering by tags</div>
-                  </div>
-                </label>
-              </div>
+              <label class="flex gap-3 items-center p-3 rounded-lg border cursor-pointer border-neutral-200 hover:bg-neutral-50">
+                <input
+                  type="checkbox"
+                  v-model="form.displaySettings.enableFilters"
+                  class="w-4 h-4 rounded text-primary-600 border-neutral-300 focus:ring-primary-500"
+                />
+                <div>
+                  <div class="font-medium text-neutral-900">Enable Filters</div>
+                  <div class="text-xs text-neutral-600">Allow filtering by tags</div>
+                </div>
+              </label>
             </div>
+          </div>
         </Card>
 
         <!-- Localization -->
@@ -190,48 +202,48 @@
           <template #header>
             <h2 class="text-lg font-semibold text-neutral-900">Localization</h2>
           </template>
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div>
-                <label class="block mb-2 text-sm font-medium text-neutral-700">
-                  Currency
-                </label>
-                <select
-                  v-model="settings.currency"
-                  class="block px-4 py-2.5 w-full rounded-lg border shadow-sm transition-all border-neutral-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                >
-                  <option value="USD">USD ($)</option>
-                  <option value="EUR">EUR (€)</option>
-                  <option value="GBP">GBP (£)</option>
-                  <option value="SAR">SAR (﷼)</option>
-                  <option value="AED">AED (د.إ)</option>
-                  <option value="EGP">EGP (E£)</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block mb-2 text-sm font-medium text-neutral-700">
-                  Default Language
-                </label>
-                <select
-                  v-model="settings.defaultLanguage"
-                  class="block px-4 py-2.5 w-full rounded-lg border shadow-sm transition-all border-neutral-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                >
-                  <option value="en">English</option>
-                  <option value="ar">Arabic</option>
-                  <option value="fr">French</option>
-                  <option value="es">Spanish</option>
-                </select>
-              </div>
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div>
+              <label class="block mb-2 text-sm font-medium text-neutral-700">
+                Currency
+              </label>
+              <select
+                v-model="form.currency"
+                class="block px-4 py-2.5 w-full rounded-lg border shadow-sm transition-all border-neutral-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              >
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="GBP">GBP (£)</option>
+                <option value="SAR">SAR (﷼)</option>
+                <option value="AED">AED (د.إ)</option>
+                <option value="EGP">EGP (E£)</option>
+              </select>
             </div>
+
+            <div>
+              <label class="block mb-2 text-sm font-medium text-neutral-700">
+                Default Language
+              </label>
+              <select
+                v-model="form.defaultLanguage"
+                class="block px-4 py-2.5 w-full rounded-lg border shadow-sm transition-all border-neutral-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              >
+                <option value="en">English</option>
+                <option value="ar">Arabic</option>
+                <option value="fr">French</option>
+                <option value="es">Spanish</option>
+              </select>
+            </div>
+          </div>
         </Card>
 
         <!-- Save Button -->
-        <div class="flex gap-3 justify-end pt-4">
+        <div class="flex gap-3 justify-end pt-4 border-t">
           <UiButton @click="loadSettings" variant="secondary">
             Cancel
           </UiButton>
           <UiButton @click="saveSettings" :loading="saving" variant="primary">
-            Save Settings
+            Save Changes
           </UiButton>
         </div>
       </div>
@@ -240,15 +252,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useAuthStore } from '~/stores/auth'
-import { useTemplateStore } from '~/stores/templates'
-import { useRestaurantSettings, type RestaurantSettings } from '~/composables/useRestaurantSettings'
-import { createDefaultTheme } from '~/stores/templates'
-import ThemeCustomizer from '~/components/menu/ThemeCustomizer.vue'
-import LayoutCustomizer from '~/components/menu/LayoutCustomizer.vue'
 import Card from '~/components/ui/Card.vue'
-import Badge from '~/components/ui/Badge.vue'
+import Input from '~/components/ui/Input.vue'
 import UiButton from '~/components/ui/Button.vue'
 
 definePageMeta({
@@ -257,48 +264,106 @@ definePageMeta({
 })
 
 const authStore = useAuthStore()
-const templateStore = useTemplateStore()
-const { loading, error, getSettings, updateSettings, applyTemplate } = useRestaurantSettings()
+const toast = useToast()
+const api = useApi()
 
-const settings = ref<RestaurantSettings>({
-  restaurantId: authStore.restaurantId || '',
-  activeTemplateId: null,
-  customTheme: createDefaultTheme(),
+const loading = ref(false)
+const saving = ref(false)
+
+interface RestaurantForm {
+  name: string
+  nameAr: string
+  logoUrl: string
+  contactPhone: string
+  contactEmail: string
+  address: string
+  addressAr: string
+  displaySettings: {
+    showPrices: boolean
+    showImages: boolean
+    showDescriptions: boolean
+    showCategories: boolean
+    enableSearch: boolean
+    enableFilters: boolean
+  }
+  currency: string
+  defaultLanguage: string
+}
+
+const form = ref<RestaurantForm>({
+  name: '',
+  nameAr: '',
+  logoUrl: '',
+  contactPhone: '',
+  contactEmail: '',
+  address: '',
+  addressAr: '',
   displaySettings: {
     showPrices: true,
     showImages: true,
     showDescriptions: true,
     showCategories: true,
     enableSearch: true,
-    enableFilters: true,
-    availableLanguages: ['en', 'ar']
+    enableFilters: true
   },
   currency: 'USD',
   defaultLanguage: 'en'
 })
 
-const templates = computed(() => templateStore.templates)
-const saving = ref(false)
-const applying = ref(false)
-
 const loadSettings = async () => {
   if (!authStore.restaurantId) {
-    console.error('No restaurant ID found in auth store')
+    toast.error('No restaurant ID found')
     return
   }
 
-  console.log('Loading settings for restaurant:', authStore.restaurantId)
-  const result = await getSettings(authStore.restaurantId)
-  if (result) {
-    console.log('Settings loaded:', result)
-    settings.value = {
-      ...result,
-      customTheme: result.customTheme || createDefaultTheme()
+  loading.value = true
+  try {
+    // Fetch restaurant details
+    const response = await api.get(`/restaurants/${authStore.restaurantId}`)
+    const restaurant = response.data
+
+    // Parse translations
+    let translations = {}
+    if (restaurant.translations) {
+      try {
+        translations = typeof restaurant.translations === 'string' 
+          ? JSON.parse(restaurant.translations)
+          : restaurant.translations
+      } catch (e) {
+        console.error('Failed to parse translations:', e)
+      }
     }
-  } else {
-    console.error('Failed to load settings:', error.value)
-    // Initialize with defaults if loading fails
-    settings.value.customTheme = createDefaultTheme()
+
+    // Parse display settings
+    let displaySettings = form.value.displaySettings
+    if (restaurant.menuDisplaySettings) {
+      try {
+        const parsed = typeof restaurant.menuDisplaySettings === 'string'
+          ? JSON.parse(restaurant.menuDisplaySettings)
+          : restaurant.menuDisplaySettings
+        displaySettings = { ...displaySettings, ...parsed }
+      } catch (e) {
+        console.error('Failed to parse display settings:', e)
+      }
+    }
+
+    form.value = {
+      name: restaurant.name || '',
+      nameAr: translations.ar?.name || '',
+      logoUrl: restaurant.logoUrl || '',
+      contactPhone: restaurant.contactPhone || '',
+      contactEmail: restaurant.contactEmail || '',
+      address: restaurant.address || '',
+      addressAr: translations.ar?.address || '',
+      displaySettings,
+      currency: restaurant.currency || 'USD',
+      defaultLanguage: restaurant.defaultLanguage || 'en'
+    }
+  } catch (error: any) {
+    console.error('Failed to load settings:', error)
+    toast.error('Failed to load settings')
+  } finally {
+    loading.value = false
   }
 }
 
@@ -307,115 +372,47 @@ const saveSettings = async () => {
 
   saving.value = true
   try {
-    const result = await updateSettings(authStore.restaurantId, {
-      activeTemplateId: settings.value.activeTemplateId,
-      customTheme: settings.value.customTheme,
-      displaySettings: settings.value.displaySettings,
-      currency: settings.value.currency,
-      defaultLanguage: settings.value.defaultLanguage
-    })
-
-    if (result) {
-      alert('Settings saved successfully!')
-    } else if (error.value) {
-      alert(error.value)
+    // Prepare translations object
+    const translations = {
+      en: {
+        name: form.value.name,
+        address: form.value.address
+      },
+      ar: {
+        name: form.value.nameAr || form.value.name,
+        address: form.value.addressAr || form.value.address
+      }
     }
+
+    // Prepare update payload
+    const payload = {
+      name: form.value.name,
+      logoUrl: form.value.logoUrl || null,
+      contactPhone: form.value.contactPhone || null,
+      contactEmail: form.value.contactEmail || null,
+      address: form.value.address || null,
+      translations: JSON.stringify(translations),
+      menuDisplaySettings: JSON.stringify(form.value.displaySettings),
+      currency: form.value.currency,
+      defaultLanguage: form.value.defaultLanguage
+    }
+
+    await api.put(`/restaurants/${authStore.restaurantId}`, payload)
+    toast.success('Settings saved successfully!')
+  } catch (error: any) {
+    console.error('Failed to save settings:', error)
+    toast.error(error.response?.data?.message || 'Failed to save settings')
   } finally {
     saving.value = false
   }
 }
 
-const selectTemplate = (templateId: string) => {
-  settings.value.activeTemplateId = templateId
-
-  // Auto-load the template's theme into custom theme
-  const selectedTemplate = templates.value.find(t => t.id === templateId)
-  if (selectedTemplate?.theme) {
-    settings.value.customTheme = { ...selectedTemplate.theme }
-    console.log('Loaded template theme:', selectedTemplate.theme)
-  }
-}
-
-const applyCurrentTemplate = async () => {
-  if (!authStore.restaurantId || !settings.value.activeTemplateId) return
-
-  // Check if user wants to overwrite existing data
-  const hasExistingData = true // Assume user has data if they're seeing this error
-  
-  let overwrite = false
-  if (hasExistingData) {
-    const choice = confirm(
-      'You already have menu data.\n\n' +
-      'Click OK to REPLACE all existing categories and items with the template.\n' +
-      'Click Cancel to keep your existing data and only apply the theme/settings.'
-    )
-    
-    if (choice) {
-      // User wants to overwrite
-      const doubleCheck = confirm(
-        '⚠️ WARNING: This will DELETE all your existing categories and items!\n\n' +
-        'Are you absolutely sure you want to continue?'
-      )
-      if (!doubleCheck) {
-        return
-      }
-      overwrite = true
-    } else {
-      // User wants to keep data, just apply theme
-      alert('Template theme and settings will be applied without changing your menu items.')
-      await saveSettings()
-      return
-    }
-  }
-
-  applying.value = true
-  try {
-    // First save the current settings (including the loaded theme)
-    await saveSettings()
-
-    // Then apply the template
-    const result = await applyTemplate(authStore.restaurantId, {
-      templateId: settings.value.activeTemplateId,
-      overwriteExisting: overwrite
-    })
-
-    if (result) {
-      alert(`Template applied successfully! Created ${result.categoriesCreated} categories and ${result.itemsCreated} items.\n\nThe template's theme has been applied to your public menu.`)
-      // Reload settings to get updated data
-      await loadSettings()
-    } else if (error.value) {
-      alert(error.value)
-    }
-  } finally {
-    applying.value = false
-  }
-}
-
-const resetTheme = () => {
-  if (confirm('Reset theme to default settings?')) {
-    settings.value.customTheme = createDefaultTheme()
-  }
-}
-
 onMounted(async () => {
-  console.log('Settings page mounted')
-  console.log('Auth store:', authStore.user)
-  console.log('Restaurant ID:', authStore.restaurantId)
-  
   if (!authStore.restaurantId) {
-    console.error('No restaurant ID - cannot load settings')
+    toast.error('No restaurant ID - cannot load settings')
     return
   }
-  
-  try {
-    await Promise.all([
-      loadSettings(),
-      templateStore.fetchTemplates()
-    ])
-    console.log('Templates loaded:', templateStore.templates)
-  } catch (err) {
-    console.error('Error loading data:', err)
-  }
+
+  await loadSettings()
 })
 </script>
-

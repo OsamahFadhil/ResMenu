@@ -8,6 +8,10 @@ export interface TemplateTheme {
   backgroundColor: string
   surfaceColor: string
   textColor: string
+  backgroundType?: 'color' | 'image' | 'gradient'
+  backgroundImageUrl?: string | null
+  backgroundOverlay?: 'none' | 'light' | 'dark'
+  backgroundGradient?: string | null
   
   // Typography
   fontFamily: string
@@ -90,6 +94,10 @@ export const createDefaultTheme = (): TemplateTheme => ({
   backgroundColor: '#fafaf9',
   surfaceColor: '#ffffff',
   textColor: '#292524',
+  backgroundType: 'color',
+  backgroundImageUrl: null,
+  backgroundOverlay: 'none',
+  backgroundGradient: null,
   
   // Typography
   fontFamily: 'Inter',

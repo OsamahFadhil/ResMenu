@@ -1,8 +1,10 @@
 using MediatR;
 using Menufy.Application.Features.Restaurants.Commands.UpdateRestaurant;
 using Menufy.Application.Features.Restaurants.Queries.GetRestaurants;
+using Menufy.Application.Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Menufy.API.Controllers;
 
@@ -12,10 +14,12 @@ namespace Menufy.API.Controllers;
 public class RestaurantsController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly IApplicationDbContext _context;
 
-    public RestaurantsController(IMediator mediator)
+    public RestaurantsController(IMediator mediator, IApplicationDbContext context)
     {
         _mediator = mediator;
+        _context = context;
     }
 
     [HttpGet]
@@ -28,6 +32,42 @@ public class RestaurantsController : ControllerBase
             return BadRequest(result);
 
         return Ok(result);
+    }
+
+    [HttpGet("{id:guid}")]
+    [Authorize(Roles = "RestaurantOwner,Admin")]
+    public async Task<IActionResult> GetRestaurant(Guid id)
+    {
+        var restaurant = await _context.Restaurants
+            .AsNoTracking()
+            .Where(r => r.Id == id)
+            .Select(r => new
+            {
+                r.Id,
+                r.Name,
+                r.Slug,
+                r.LogoUrl,
+                r.ContactPhone,
+                r.ContactEmail,
+                r.Address,
+                r.Translations,
+                r.MenuDisplaySettings,
+                r.Currency,
+                r.DefaultLanguage,
+                r.ActiveTemplateId,
+                r.CustomTheme,
+                r.OwnerId,
+                r.LastMenuUpdate,
+                r.CreatedAt
+            })
+            .FirstOrDefaultAsync();
+
+        if (restaurant == null)
+        {
+            return NotFound(new { message = "Restaurant not found" });
+        }
+
+        return Ok(restaurant);
     }
 
     [HttpPut("{id:guid}")]

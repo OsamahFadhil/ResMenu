@@ -31,30 +31,36 @@
     <!-- Menu Content -->
     <div v-else-if="menu" class="pb-20">
       <!-- Restaurant Header -->
-      <header class="relative overflow-hidden"
-        :style="{ backgroundColor: settings.surfaceColor }">
-        <div class="absolute inset-0 opacity-5"
-          :style="{ background: `linear-gradient(135deg, ${settings.primaryColor} 0%, ${settings.accentColor} 100%)` }">
-        </div>
-
+      <header class="relative overflow-hidden" :style="headerContainerStyles">
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-          <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+          <div :class="headerContentClasses">
             <!-- Restaurant Info -->
-            <div class="flex items-start gap-6">
-              <div v-if="menu.logoUrl" class="flex-shrink-0">
+            <div
+              class="flex flex-col lg:flex-row items-center lg:items-start gap-6 w-full"
+              :class="layoutSettings.headerAlignment === 'center' ? 'text-center lg:text-left justify-center' : ''"
+            >
+              <div
+                v-if="layoutSettings.showLogo && menu.logoUrl"
+                class="flex-shrink-0"
+                :class="headerLogoOrderClass"
+              >
                 <img
                   :src="menu.logoUrl"
                   :alt="menu.restaurantLocalizedName"
-                  class="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl object-cover shadow-xl ring-4 ring-white/50"
+                  class="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl object-cover shadow-xl ring-4 ring-white/50 bg-white/80 backdrop-blur"
                 />
               </div>
-              <div class="space-y-3">
-                <h1 class="text-4xl sm:text-5xl font-bold tracking-tight"
-                  :style="{ color: settings.textColor }">
+              <div :class="[headerTextClasses, 'flex-1 max-w-3xl']">
+                <h1 class="text-4xl sm:text-5xl font-bold tracking-tight" :style="{ color: headerTextColor }">
                   {{ menu.restaurantLocalizedName || menu.restaurantName }}
                 </h1>
-                <div class="flex flex-wrap items-center gap-3 text-sm font-medium"
-                  :style="{ color: settings.textColor, opacity: 0.7 }">
+                <p v-if="layoutSettings.tagline" class="text-lg font-medium opacity-80" :style="{ color: headerTextColor }">
+                  {{ layoutSettings.tagline }}
+                </p>
+                <div
+                  class="flex flex-wrap items-center gap-3 text-sm font-medium justify-center lg:justify-start"
+                  :style="{ color: headerTextColor, opacity: 0.8 }"
+                >
                   <span class="px-3 py-1 rounded-full"
                     :style="{ backgroundColor: `${settings.primaryColor}20`, color: settings.primaryColor }">
                     {{ menu.language.toUpperCase() }}
@@ -62,33 +68,51 @@
                   <span>•</span>
                   <span>{{ totalItems }} {{ totalItems === 1 ? 'Item' : 'Items' }}</span>
                 </div>
+                <div
+                  v-if="layoutSettings.showRestaurantInfo && menu.address"
+                  class="text-sm opacity-75"
+                  :style="{ color: headerTextColor }"
+                >
+                  {{ menu.address }}
+                </div>
               </div>
             </div>
 
             <!-- Contact Info -->
-            <div v-if="menu.contactPhone || menu.contactEmail || menu.address"
-              class="space-y-3 text-sm lg:text-right">
-              <div v-if="menu.contactPhone" class="flex items-center gap-2 lg:justify-end">
+            <div
+              v-if="menu.contactPhone || menu.contactEmail || (layoutSettings.showRestaurantInfo && menu.address)"
+              class="space-y-3 text-sm"
+              :class="layoutSettings.headerAlignment === 'center'
+                ? 'text-center lg:text-right'
+                : layoutSettings.headerAlignment === 'left'
+                  ? 'text-left lg:text-right'
+                  : 'text-right'"
+            >
+              <div v-if="menu.contactPhone" class="flex items-center gap-2"
+                :class="layoutSettings.headerAlignment === 'center'
+                  ? 'justify-center lg:justify-end'
+                  : layoutSettings.headerAlignment === 'left'
+                    ? 'justify-start lg:justify-end'
+                    : 'justify-end'">
                 <svg class="w-5 h-5" :style="{ color: settings.primaryColor }" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                 </svg>
-                <span class="font-semibold" :style="{ color: settings.textColor }">{{ menu.contactPhone }}</span>
+                <span class="font-semibold" :style="{ color: headerTextColor }">{{ menu.contactPhone }}</span>
               </div>
-              <div v-if="menu.contactEmail" class="flex items-center gap-2 lg:justify-end">
+              <div v-if="menu.contactEmail" class="flex items-center gap-2"
+                :class="layoutSettings.headerAlignment === 'center'
+                  ? 'justify-center lg:justify-end'
+                  : layoutSettings.headerAlignment === 'left'
+                    ? 'justify-start lg:justify-end'
+                    : 'justify-end'">
                 <svg class="w-5 h-5" :style="{ color: settings.primaryColor }" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                   <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                 </svg>
                 <a :href="`mailto:${menu.contactEmail}`" class="font-semibold hover:underline"
-                  :style="{ color: settings.textColor }">
+                  :style="{ color: headerTextColor }">
                   {{ menu.contactEmail }}
                 </a>
-              </div>
-              <div v-if="menu.address" class="flex items-center gap-2 lg:justify-end">
-                <svg class="w-5 h-5" :style="{ color: settings.primaryColor }" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-                </svg>
-                <span :style="{ color: settings.textColor }">{{ menu.address }}</span>
               </div>
             </div>
           </div>
@@ -194,6 +218,7 @@
           :categories="filteredCategories"
           :settings="settings"
           :displaySettings="displaySettings"
+          :layoutConfiguration="menu.layoutConfiguration"
           :currency="menu.currency"
           @item-click="openItemDetail"
         />
@@ -284,7 +309,11 @@ const settings = computed(() => ({
   backgroundColor: menu.value?.theme?.backgroundColor || '#fafaf9',
   surfaceColor: menu.value?.theme?.surfaceColor || '#ffffff',
   textColor: menu.value?.theme?.textColor || '#1f2937',
-  fontFamily: menu.value?.theme?.fontFamily || 'Inter'
+  fontFamily: menu.value?.theme?.fontFamily || 'Inter',
+  backgroundType: menu.value?.theme?.backgroundType || 'color',
+  backgroundImageUrl: menu.value?.theme?.backgroundImageUrl || null,
+  backgroundOverlay: menu.value?.theme?.backgroundOverlay || 'none',
+  backgroundGradient: menu.value?.theme?.backgroundGradient || null
 }))
 
 const displaySettings = computed(() => menu.value?.displaySettings || {
@@ -295,6 +324,93 @@ const displaySettings = computed(() => menu.value?.displaySettings || {
   enableSearch: true,
   enableFilters: true
 })
+
+const layoutSettings = computed(() => {
+  const defaults = {
+    spacing: 'normal',
+    borderRadius: 'medium',
+    fontFamily: settings.value.fontFamily,
+    headerStyle: 'simple',
+    logoPosition: 'center',
+    showRestaurantInfo: true,
+    showLogo: true,
+    headerAlignment: 'center',
+    tagline: ''
+  }
+
+  return {
+    ...defaults,
+    ...(menu.value?.layoutConfiguration?.globalSettings || {})
+  }
+})
+
+const headerContainerStyles = computed(() => {
+  const primary = settings.value.primaryColor
+  const accent = settings.value.accentColor
+  const surface = settings.value.surfaceColor
+  const text = settings.value.textColor
+  const style: Record<string, string> = {}
+
+  if (layoutSettings.value.headerStyle === 'banner') {
+    // Banner style: use gradient background
+    style.backgroundImage = `linear-gradient(135deg, ${primary}, ${accent})`
+    style.color = '#ffffff'
+    style.backgroundColor = primary // Fallback
+  } else if (layoutSettings.value.headerStyle === 'overlay') {
+    // Overlay style: dark overlay for readability
+    style.backgroundColor = 'rgba(0, 0, 0, 0.4)'
+    style.backdropFilter = 'blur(10px)'
+    style.color = '#ffffff'
+  } else {
+    // Simple style: transparent or semi-transparent to show page background
+    const hasBackgroundImage = settings.value.backgroundType === 'image' && settings.value.backgroundImageUrl
+    const hasBackgroundGradient = settings.value.backgroundType === 'gradient' && settings.value.backgroundGradient
+    
+    if (hasBackgroundImage || hasBackgroundGradient) {
+      // Transparent header to show page background
+      style.backgroundColor = 'rgba(255, 255, 255, 0.1)'
+      style.backdropFilter = 'blur(8px)'
+      style.color = text
+    } else {
+      // Use surface color when no background image/gradient
+      style.backgroundColor = surface
+      style.color = text
+    }
+  }
+
+  return style
+})
+
+const headerContentClasses = computed(() => {
+  const classes = ['flex', 'flex-col', 'lg:flex-row', 'gap-8']
+  const alignment = layoutSettings.value.headerAlignment
+
+  if (alignment === 'left') {
+    classes.push('lg:items-center', 'lg:justify-between')
+  } else if (alignment === 'right') {
+    classes.push('lg:items-center', 'lg:justify-between')
+  } else {
+    classes.push('lg:items-center', 'lg:justify-between')
+  }
+
+  return classes.join(' ')
+})
+
+const headerTextClasses = computed(() => {
+  const alignment = layoutSettings.value.headerAlignment
+  if (alignment === 'left') return 'space-y-3 text-left'
+  if (alignment === 'right') return 'space-y-3 text-right lg:text-right'
+  return 'space-y-3 text-center lg:text-left'
+})
+
+const headerLogoOrderClass = computed(() => {
+  const position = layoutSettings.value.logoPosition
+  if (position === 'left') return 'order-0'
+  if (position === 'right') return 'order-2 lg:order-last'
+  return 'order-0 lg:order-none'
+})
+
+const headerTextColor = computed(() => headerContainerStyles.value.color || settings.value.textColor)
 
 // Flatten categories
 const allCategories = computed(() => {
@@ -427,14 +543,40 @@ watch(() => locale.value, async (newLocale) => {
   }
 })
 
-const rootStyles = computed(() => ({
-  '--primary-color': settings.value.primaryColor,
-  '--accent-color': settings.value.accentColor,
-  backgroundColor: settings.value.backgroundColor,
-  color: settings.value.textColor,
-  fontFamily: settings.value.fontFamily,
-  minHeight: '100vh'
-}))
+const rootStyles = computed(() => {
+  const style: Record<string, string> = {
+    '--primary-color': settings.value.primaryColor,
+    '--accent-color': settings.value.accentColor,
+    color: settings.value.textColor,
+    fontFamily: settings.value.fontFamily,
+    minHeight: '100vh'
+  }
+
+  if (settings.value.backgroundType === 'image' && settings.value.backgroundImageUrl) {
+    let overlayGradient = ''
+    if (settings.value.backgroundOverlay === 'light') {
+      overlayGradient = 'linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.55))'
+    } else if (settings.value.backgroundOverlay === 'dark') {
+      overlayGradient = 'linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45))'
+    }
+
+    style.backgroundImage = overlayGradient
+      ? `${overlayGradient}, url("${settings.value.backgroundImageUrl}")`
+      : `url("${settings.value.backgroundImageUrl}")`
+    style.backgroundSize = 'cover'
+    style.backgroundPosition = 'center'
+    style.backgroundRepeat = 'no-repeat'
+    style.backgroundAttachment = 'fixed'
+    style.backgroundColor = settings.value.backgroundColor
+  } else if (settings.value.backgroundType === 'gradient' && settings.value.backgroundGradient) {
+    style.backgroundImage = settings.value.backgroundGradient
+    style.backgroundColor = settings.value.backgroundColor
+  } else {
+    style.backgroundColor = settings.value.backgroundColor
+  }
+
+  return style
+})
 </script>
 
 <style scoped>

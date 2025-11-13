@@ -110,6 +110,7 @@ definePageMeta({
 const { t } = useI18n({ useScope: 'global' })
 const authStore = useAuthStore()
 const restaurantStore = useRestaurantStore()
+const toast = useToast()
 
 const loading = ref(false)
 const generating = ref(false)
@@ -127,7 +128,7 @@ onMounted(async () => {
   try {
     await restaurantStore.generateQRCode(restaurantId.value)
   } catch (error) {
-    console.error('Failed to load QR code:', error)
+    toast.error(t('messages.errorOccurred'))
   } finally {
     loading.value = false
   }
@@ -135,16 +136,16 @@ onMounted(async () => {
 
 const generateQRCode = async () => {
   if (!restaurantId.value) {
-    alert(t('messages.errorOccurred'))
+    toast.error(t('messages.errorOccurred'))
     return
   }
 
   generating.value = true
   try {
     await restaurantStore.generateQRCode(restaurantId.value)
+    toast.success(t('qr.generated') || 'QR Code generated successfully')
   } catch (error) {
-    console.error('Failed to generate QR code:', error)
-    alert(t('messages.errorOccurred'))
+    toast.error(t('messages.errorOccurred'))
   } finally {
     generating.value = false
   }
@@ -162,9 +163,9 @@ const copyLink = async () => {
   if (qrCode.value?.link) {
     try {
       await navigator.clipboard.writeText(qrCode.value.link)
-      alert('Link copied to clipboard!')
+      toast.success('Link copied to clipboard!')
     } catch (error) {
-      console.error('Failed to copy link:', error)
+      toast.error('Failed to copy link')
     }
   }
 }
