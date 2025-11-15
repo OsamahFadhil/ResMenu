@@ -32,6 +32,12 @@ public class MenuDesign : BaseEntity
     /// Optional name for saved designs (e.g., "Summer Menu 2024")
     /// </summary>
     public string? Name { get; set; }
+
+    public string? HeaderImageUrl { get; set; }
+
+    public string? HeaderColor { get; set; }
+
+    public string? HeaderDisplayMode { get; set; } // "row", "column"
     
     // Navigation properties
     public Restaurant Restaurant { get; set; } = null!;
