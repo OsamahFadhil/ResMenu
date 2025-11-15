@@ -30,87 +30,76 @@
 
     <!-- Menu Content -->
     <div v-else-if="menu" class="pb-20">
-      <!-- Restaurant Header -->
-      <header class="relative overflow-hidden" :style="headerContainerStyles">
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-          <div :class="headerContentClasses">
-            <!-- Restaurant Info -->
+      <!-- Restaurant Header - Menu Style -->
+      <header class="relative overflow-hidden py-8 sm:py-12 md:py-16" :style="headerContainerStyles">
+        <div class="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center">
+            <!-- Logo -->
             <div
-              class="flex flex-col lg:flex-row items-center lg:items-start gap-6 w-full"
-              :class="layoutSettings.headerAlignment === 'center' ? 'text-center lg:text-left justify-center' : ''"
+              v-if="layoutSettings.showLogo && menu.logoUrl"
+              class="mb-6 sm:mb-8"
             >
-              <div
-                v-if="layoutSettings.showLogo && menu.logoUrl"
-                class="flex-shrink-0"
-                :class="headerLogoOrderClass"
-              >
-                <img
-                  :src="menu.logoUrl"
-                  :alt="menu.restaurantLocalizedName"
-                  class="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl object-cover shadow-xl ring-4 ring-white/50 bg-white/80 backdrop-blur"
-                />
-              </div>
-              <div :class="[headerTextClasses, 'flex-1 max-w-3xl']">
-                <h1 class="text-4xl sm:text-5xl font-bold tracking-tight" :style="{ color: headerTextColor }">
-                  {{ menu.restaurantLocalizedName || menu.restaurantName }}
-                </h1>
-                <p v-if="layoutSettings.tagline" class="text-lg font-medium opacity-80" :style="{ color: headerTextColor }">
-                  {{ layoutSettings.tagline }}
-                </p>
-                <div
-                  class="flex flex-wrap items-center gap-3 text-sm font-medium justify-center lg:justify-start"
-                  :style="{ color: headerTextColor, opacity: 0.8 }"
-                >
-                  <span class="px-3 py-1 rounded-full"
-                    :style="{ backgroundColor: `${settings.primaryColor}20`, color: settings.primaryColor }">
-                    {{ menu.language.toUpperCase() }}
-                  </span>
-                  <span>•</span>
-                  <span>{{ totalItems }} {{ totalItems === 1 ? 'Item' : 'Items' }}</span>
-                </div>
-                <div
-                  v-if="layoutSettings.showRestaurantInfo && menu.address"
-                  class="text-sm opacity-75"
-                  :style="{ color: headerTextColor }"
-                >
-                  {{ menu.address }}
-                </div>
-              </div>
+              <img
+                :src="menu.logoUrl"
+                :alt="menu.restaurantLocalizedName"
+                class="mx-auto w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full object-cover shadow-lg ring-2 ring-white/80 bg-white/90"
+              />
             </div>
-
+            
+            <!-- Restaurant Name -->
+            <h1 
+              class="text-4xl sm:text-5xl md:text-6xl font-serif font-bold tracking-wide mb-3 sm:mb-4" 
+              :style="{ 
+                color: headerTextColor,
+                fontFamily: settings.fontFamily || 'Playfair Display, serif',
+                letterSpacing: '0.05em'
+              }"
+            >
+              {{ menu.restaurantLocalizedName || menu.restaurantName }}
+            </h1>
+            
+            <!-- Decorative Line -->
+            <div 
+              class="mx-auto w-32 h-0.5 sm:w-40 mb-4 sm:mb-6"
+              :style="{ backgroundColor: settings.primaryColor || '#dc2626' }"
+            ></div>
+            
+            <!-- Tagline -->
+            <p 
+              v-if="layoutSettings.tagline" 
+              class="text-base sm:text-lg md:text-xl font-medium mb-4 sm:mb-6 italic" 
+              :style="{ color: headerTextColor, opacity: 0.9 }"
+            >
+              {{ layoutSettings.tagline }}
+            </p>
+            
+            <!-- Address -->
+            <div
+              v-if="layoutSettings.showRestaurantInfo && menu.address"
+              class="text-sm sm:text-base opacity-80 mb-4"
+              :style="{ color: headerTextColor }"
+            >
+              {{ menu.address }}
+            </div>
+            
             <!-- Contact Info -->
             <div
-              v-if="menu.contactPhone || menu.contactEmail || (layoutSettings.showRestaurantInfo && menu.address)"
-              class="space-y-3 text-sm"
-              :class="layoutSettings.headerAlignment === 'center'
-                ? 'text-center lg:text-right'
-                : layoutSettings.headerAlignment === 'left'
-                  ? 'text-left lg:text-right'
-                  : 'text-right'"
+              v-if="menu.contactPhone || menu.contactEmail"
+              class="flex flex-wrap items-center justify-center gap-4 text-sm sm:text-base"
+              :style="{ color: headerTextColor, opacity: 0.85 }"
             >
-              <div v-if="menu.contactPhone" class="flex items-center gap-2"
-                :class="layoutSettings.headerAlignment === 'center'
-                  ? 'justify-center lg:justify-end'
-                  : layoutSettings.headerAlignment === 'left'
-                    ? 'justify-start lg:justify-end'
-                    : 'justify-end'">
-                <svg class="w-5 h-5" :style="{ color: settings.primaryColor }" fill="currentColor" viewBox="0 0 20 20">
+              <div v-if="menu.contactPhone" class="flex items-center gap-2">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                 </svg>
-                <span class="font-semibold" :style="{ color: headerTextColor }">{{ menu.contactPhone }}</span>
+                <span>{{ menu.contactPhone }}</span>
               </div>
-              <div v-if="menu.contactEmail" class="flex items-center gap-2"
-                :class="layoutSettings.headerAlignment === 'center'
-                  ? 'justify-center lg:justify-end'
-                  : layoutSettings.headerAlignment === 'left'
-                    ? 'justify-start lg:justify-end'
-                    : 'justify-end'">
-                <svg class="w-5 h-5" :style="{ color: settings.primaryColor }" fill="currentColor" viewBox="0 0 20 20">
+              <div v-if="menu.contactEmail" class="flex items-center gap-2">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                   <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                 </svg>
-                <a :href="`mailto:${menu.contactEmail}`" class="font-semibold hover:underline"
-                  :style="{ color: headerTextColor }">
+                <a :href="`mailto:${menu.contactEmail}`" class="hover:underline">
                   {{ menu.contactEmail }}
                 </a>
               </div>
@@ -121,9 +110,12 @@
 
       <!-- Search and Filter Bar -->
       <div v-if="displaySettings.enableSearch || displaySettings.enableFilters"
-        class="sticky top-0 z-30 backdrop-blur-xl shadow-lg"
-        :style="{ backgroundColor: `${settings.surfaceColor}f5` }">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        class="sticky top-0 z-30 backdrop-blur-md border-b"
+        :style="{ 
+          backgroundColor: `${settings.surfaceColor}ee`,
+          borderColor: `${settings.primaryColor}20`
+        }">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           <div class="space-y-4">
             <!-- Search Bar -->
             <div v-if="displaySettings.enableSearch" class="relative max-w-2xl">
@@ -213,7 +205,7 @@
       </div>
 
       <!-- Menu Categories -->
-      <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-12">
         <PublicMenuCategoryTree
           :categories="filteredCategories"
           :settings="settings"
@@ -273,6 +265,7 @@
       :settings="settings"
       :display-price="displaySettings.showPrices"
       :currency="menu?.currency"
+      :modal-settings="layoutSettings.itemDetailModal"
       @close="closeItemDetail"
     />
   </div>
@@ -335,7 +328,16 @@ const layoutSettings = computed(() => {
     showRestaurantInfo: true,
     showLogo: true,
     headerAlignment: 'center',
-    tagline: ''
+    tagline: '',
+    itemDetailModal: {
+      maxWidth: '5xl',
+      borderRadius: 'large',
+      showDietaryInfo: true,
+      showAllergenInfo: true,
+      showAdditionalDetails: true,
+      imageHeight: 'medium',
+      closeButtonStyle: 'default'
+    }
   }
 
   return {

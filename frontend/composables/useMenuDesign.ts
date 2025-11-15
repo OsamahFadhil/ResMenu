@@ -15,6 +15,16 @@ export interface CategoryLayout {
   showDescriptions: boolean
 }
 
+export interface ItemDetailModalSettings {
+  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '4xl' | '5xl' | '6xl' | 'full'
+  borderRadius?: 'none' | 'small' | 'medium' | 'large'
+  showDietaryInfo?: boolean
+  showAllergenInfo?: boolean
+  showAdditionalDetails?: boolean
+  imageHeight?: 'small' | 'medium' | 'large'
+  closeButtonStyle?: 'default' | 'minimal' | 'hidden'
+}
+
 export interface GlobalLayoutSettings {
   spacing: 'compact' | 'normal' | 'relaxed'
   borderRadius: 'none' | 'small' | 'medium' | 'large'
@@ -25,6 +35,7 @@ export interface GlobalLayoutSettings {
   showLogo: boolean
   headerAlignment: 'left' | 'center' | 'right'
   tagline?: string
+  itemDetailModal?: ItemDetailModalSettings
 }
 
 export interface LayoutConfiguration {

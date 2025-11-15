@@ -8,6 +8,13 @@
           <p class="mt-1 text-sm text-neutral-600">Drag and drop to design your menu layout</p>
         </div>
         <div class="flex gap-3 items-center">
+          <UiButton @click="showSettingsModal = true" variant="secondary" size="sm">
+            <svg class="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Settings
+          </UiButton>
           <UiButton @click="previewMenu" variant="secondary" size="sm">
             <svg class="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -784,6 +791,546 @@
         </div>
       </div>
     </div>
+
+    <!-- Settings Modal -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div
+          v-if="showSettingsModal"
+          class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black bg-opacity-60 backdrop-blur-md"
+          @click.self="showSettingsModal = false"
+        >
+          <div
+            class="relative w-full max-w-4xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden transform transition-all max-h-[95vh] sm:max-h-[90vh] flex flex-col"
+          >
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center px-6 py-4 border-b border-neutral-200 bg-neutral-50">
+              <div class="flex items-center gap-3">
+                <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <h2 class="text-xl font-bold text-neutral-900">Menu Settings</h2>
+              </div>
+              <button
+                @click="showSettingsModal = false"
+                class="p-2 rounded-lg hover:bg-neutral-200 transition-colors"
+                aria-label="Close"
+              >
+                <svg class="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Modal Content - Copy settings from right panel -->
+            <div class="flex-1 overflow-y-auto">
+              <div class="p-4 sm:p-6">
+                <!-- Use the same settings component structure from right panel -->
+                <div v-if="!selectedCategory" class="space-y-6">
+                  <!-- Primary Color -->
+                  <div>
+                    <label class="block mb-2 text-xs font-medium text-neutral-700">Primary Color</label>
+                    <input
+                      v-model="globalTheme.primaryColor"
+                      type="color"
+                      class="w-full h-10 rounded-lg border-2 cursor-pointer border-neutral-300"
+                    />
+                  </div>
+
+                  <!-- Accent Color -->
+                  <div>
+                    <label class="block mb-2 text-xs font-medium text-neutral-700">Accent Color</label>
+                    <input
+                      v-model="globalTheme.accentColor"
+                      type="color"
+                      class="w-full h-10 rounded-lg border-2 cursor-pointer border-neutral-300"
+                    />
+                  </div>
+
+                  <!-- Background Style -->
+                  <div>
+                    <label class="block mb-2 text-xs font-medium text-neutral-700">Background Style</label>
+                    <div class="grid grid-cols-3 gap-2">
+                      <button
+                        v-for="type in ['color', 'image', 'gradient'] as const"
+                        :key="type"
+                        @click="globalTheme.backgroundType = type"
+                        :class="[
+                          'px-3 py-2 text-xs rounded-lg border-2 transition capitalize',
+                          globalTheme.backgroundType === type
+                            ? 'border-primary-600 bg-primary-50 text-primary-700'
+                            : 'border-neutral-300 text-neutral-700 hover:border-neutral-400'
+                        ]"
+                      >
+                        {{ type }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Background Color -->
+                  <div v-if="globalTheme.backgroundType !== 'image'">
+                    <label class="block mb-2 text-xs font-medium text-neutral-700">
+                      {{ globalTheme.backgroundType === 'gradient' ? 'Fallback Background Color' : 'Background Color' }}
+                    </label>
+                    <input
+                      v-model="globalTheme.backgroundColor"
+                      type="color"
+                      class="w-full h-10 rounded-lg border-2 cursor-pointer border-neutral-300"
+                    />
+                  </div>
+
+                  <!-- Background Gradient -->
+                  <div v-if="globalTheme.backgroundType === 'gradient'">
+                    <label class="block mb-2 text-xs font-medium text-neutral-700">Gradient CSS</label>
+                    <input
+                      v-model="globalTheme.backgroundGradient"
+                      type="text"
+                      placeholder="e.g. linear-gradient(135deg, #dc2626 0%, #f97316 100%)"
+                      class="px-3 py-2 w-full text-sm rounded-lg border border-neutral-300"
+                    />
+                    <p class="mt-1 text-xs text-neutral-500">
+                      Use any valid CSS gradient. The fallback color will show while loading.
+                    </p>
+                  </div>
+
+                  <!-- Background Image -->
+                  <div v-if="globalTheme.backgroundType === 'image'" class="space-y-3">
+                    <div v-if="globalTheme.backgroundImageUrl" class="relative">
+                      <img
+                        :src="globalTheme.backgroundImageUrl"
+                        alt="Background preview"
+                        class="object-cover w-full h-32 rounded-lg border border-neutral-300"
+                      />
+                      <button
+                        @click="globalTheme.backgroundImageUrl = null"
+                        class="absolute top-2 right-2 p-1.5 text-white bg-red-500 rounded-full shadow-md transition hover:bg-red-600"
+                        title="Remove background"
+                      >
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <div class="space-y-2">
+                      <label class="block cursor-pointer">
+                        <input
+                          ref="backgroundFileInput"
+                          type="file"
+                          accept="image/*"
+                          @change="handleBackgroundUpload"
+                          class="hidden"
+                        />
+                        <div class="px-4 py-2.5 text-sm font-medium text-center text-white rounded-lg transition bg-primary-600 hover:bg-primary-700">
+                          <svg class="inline-block mr-1.5 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          {{ globalTheme.backgroundImageUrl ? 'Change Background' : 'Upload Background' }}
+                        </div>
+                      </label>
+
+                      <div v-if="uploadingBackground" class="flex gap-2 justify-center items-center py-2 text-xs text-neutral-600">
+                        <div class="w-3 h-3 rounded-full border-2 animate-spin border-primary-600 border-t-transparent"></div>
+                        <span>Uploading background...</span>
+                      </div>
+
+                      <div>
+                        <label class="block mb-1 text-xs font-medium text-neutral-700">Image URL</label>
+                        <input
+                          v-model="globalTheme.backgroundImageUrl"
+                          type="text"
+                          placeholder="https://example.com/background.jpg"
+                          class="px-3 py-2 w-full text-sm rounded-lg border border-neutral-300"
+                        />
+                      </div>
+
+                      <div>
+                        <label class="block mb-2 text-xs font-medium text-neutral-700">Overlay</label>
+                        <div class="grid grid-cols-3 gap-2">
+                          <button
+                            v-for="overlay in ['none', 'light', 'dark'] as const"
+                            :key="overlay"
+                            @click="globalTheme.backgroundOverlay = overlay"
+                            :class="[
+                              'px-3 py-2 text-xs rounded-lg border-2 transition capitalize',
+                              globalTheme.backgroundOverlay === overlay
+                                ? 'border-primary-600 bg-primary-50 text-primary-700'
+                                : 'border-neutral-300 text-neutral-700 hover:border-neutral-400'
+                            ]"
+                          >
+                            {{ overlay }}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Component Defaults -->
+                  <div class="px-3 py-3 space-y-3 rounded-lg border bg-white/70">
+                    <div class="flex justify-between items-center">
+                      <label class="text-xs font-semibold tracking-wide uppercase text-neutral-700">Component Styles</label>
+                      <button
+                        type="button"
+                        class="text-xs font-medium text-primary-600 hover:text-primary-700"
+                        @click="applyDefaultsToCategories"
+                      >
+                        Apply to all
+                      </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                      <div>
+                        <label class="block mb-1 text-xs font-medium text-neutral-700">Default Layout</label>
+                        <select
+                          v-model="globalTheme.layout"
+                          class="px-3 py-2 w-full text-sm rounded-lg border border-neutral-300"
+                        >
+                          <option value="list">List</option>
+                          <option value="grid">Grid</option>
+                          <option value="cards">Cards</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label class="block mb-1 text-xs font-medium text-neutral-700">Card Style</label>
+                        <select
+                          v-model="globalTheme.cardStyle"
+                          class="px-3 py-2 w-full text-sm rounded-lg border border-neutral-300"
+                        >
+                          <option value="modern">Modern</option>
+                          <option value="classic">Classic</option>
+                          <option value="minimal">Minimal</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label class="block mb-1 text-xs font-medium text-neutral-700">Spacing</label>
+                        <select
+                          v-model="globalTheme.spacing"
+                          class="px-3 py-2 w-full text-sm rounded-lg border border-neutral-300"
+                        >
+                          <option value="compact">Compact</option>
+                          <option value="normal">Comfortable</option>
+                          <option value="relaxed">Relaxed</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label class="block mb-1 text-xs font-medium text-neutral-700">Border Radius</label>
+                        <select
+                          v-model="globalTheme.borderRadius"
+                          class="px-3 py-2 w-full text-sm rounded-lg border border-neutral-300"
+                        >
+                          <option value="none">None</option>
+                          <option value="small">Small</option>
+                          <option value="medium">Medium</option>
+                          <option value="large">Large</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label class="block mb-1 text-xs font-medium text-neutral-700">Image Size</label>
+                        <select
+                          v-model="globalTheme.imageSize"
+                          class="px-3 py-2 w-full text-sm rounded-lg border border-neutral-300"
+                        >
+                          <option value="small">Small</option>
+                          <option value="medium">Medium</option>
+                          <option value="large">Large</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label class="block mb-1 text-xs font-medium text-neutral-700">Image Shape</label>
+                        <select
+                          v-model="globalTheme.imageShape"
+                          class="px-3 py-2 w-full text-sm rounded-lg border border-neutral-300"
+                        >
+                          <option value="rounded">Rounded</option>
+                          <option value="square">Square</option>
+                          <option value="circle">Circle</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <label class="flex justify-between items-center text-sm text-neutral-700">
+                      <span>Show Images by Default</span>
+                      <input type="checkbox" v-model="globalTheme.showImages" class="w-4 h-4 rounded text-primary-600" />
+                    </label>
+                  </div>
+
+                  <!-- Font Family -->
+                  <div>
+                    <label class="block mb-2 text-xs font-medium text-neutral-700">Font Family</label>
+                    <select
+                      v-model="globalTheme.fontFamily"
+                      class="px-3 py-2 w-full text-sm rounded-lg border border-neutral-300"
+                    >
+                      <option value="Inter">Inter</option>
+                      <option value="Roboto">Roboto</option>
+                      <option value="Open Sans">Open Sans</option>
+                      <option value="Playfair Display">Playfair Display</option>
+                    </select>
+                  </div>
+
+                  <!-- Surface Color -->
+                  <div>
+                    <label class="block mb-2 text-xs font-medium text-neutral-700">Surface Color</label>
+                    <input
+                      v-model="globalTheme.surfaceColor"
+                      type="color"
+                      class="w-full h-10 rounded-lg border-2 cursor-pointer border-neutral-300"
+                    />
+                  </div>
+
+                  <!-- Text Color -->
+                  <div>
+                    <label class="block mb-2 text-xs font-medium text-neutral-700">Text Color</label>
+                    <input
+                      v-model="globalTheme.textColor"
+                      type="color"
+                      class="w-full h-10 rounded-lg border-2 cursor-pointer border-neutral-300"
+                    />
+                  </div>
+
+                  <!-- Header Style -->
+                  <div>
+                    <label class="block mb-2 text-xs font-medium text-neutral-700">Header Style</label>
+                    <select
+                      v-model="globalSettings.headerStyle"
+                      class="px-3 py-2 w-full text-sm rounded-lg border border-neutral-300"
+                    >
+                      <option value="simple">Simple</option>
+                      <option value="banner">Banner</option>
+                      <option value="overlay">Overlay</option>
+                    </select>
+                  </div>
+
+                  <!-- Logo Position -->
+                  <div>
+                    <label class="block mb-2 text-xs font-medium text-neutral-700">Logo Position</label>
+                    <div class="grid grid-cols-3 gap-2">
+                      <button
+                        v-for="pos in ['left', 'center', 'right'] as const"
+                        :key="pos"
+                        @click="globalSettings.logoPosition = pos as 'left' | 'center' | 'right'"
+                        :class="[
+                          'px-3 py-2 text-xs rounded-lg border-2 transition',
+                          globalSettings.logoPosition === pos
+                            ? 'border-primary-600 bg-primary-50 text-primary-700'
+                            : 'border-neutral-300 text-neutral-700 hover:border-neutral-400'
+                        ]"
+                      >
+                        {{ pos }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Header Alignment -->
+                  <div>
+                    <label class="block mb-2 text-xs font-medium text-neutral-700">Header Alignment</label>
+                    <div class="grid grid-cols-3 gap-2">
+                      <button
+                        v-for="align in ['left', 'center', 'right'] as const"
+                        :key="align"
+                        @click="globalSettings.headerAlignment = align"
+                        :class="[
+                          'px-3 py-2 text-xs rounded-lg border-2 transition capitalize',
+                          globalSettings.headerAlignment === align
+                            ? 'border-primary-600 bg-primary-50 text-primary-700'
+                            : 'border-neutral-300 text-neutral-700 hover:border-neutral-400'
+                        ]"
+                      >
+                        {{ align }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Header Tagline -->
+                  <div>
+                    <label class="block mb-2 text-xs font-medium text-neutral-700">Tagline / Subtitle</label>
+                    <input
+                      v-model="globalSettings.tagline"
+                      type="text"
+                      maxlength="80"
+                      placeholder="e.g. Finest Mediterranean Cuisine Since 1987"
+                      class="px-3 py-2 w-full text-sm rounded-lg border border-neutral-300"
+                    />
+                    <p class="mt-1 text-xs text-neutral-500">
+                      Optional subtitle that appears below your restaurant name.
+                    </p>
+                  </div>
+
+                  <!-- Header Visibility -->
+                  <div class="px-3 py-3 space-y-2 rounded-lg border bg-white/70">
+                    <label class="block text-xs font-semibold text-neutral-700">Header Elements</label>
+                    <label class="flex justify-between items-center text-sm text-neutral-700">
+                      <span>Show Logo</span>
+                      <input type="checkbox" v-model="globalSettings.showLogo" class="w-4 h-4 rounded text-primary-600" />
+                    </label>
+                    <label class="flex justify-between items-center text-sm text-neutral-700">
+                      <span>Show Restaurant Info</span>
+                      <input type="checkbox" v-model="globalSettings.showRestaurantInfo" class="w-4 h-4 rounded text-primary-600" />
+                    </label>
+                  </div>
+
+                  <!-- Logo Upload -->
+                  <div>
+                    <label class="block mb-2 text-xs font-medium text-neutral-700">Restaurant Logo</label>
+                    
+                    <!-- Current Logo Preview -->
+                    <div v-if="restaurantInfo.logoUrl" class="relative mx-auto mb-3 w-full h-32">
+                      <img :src="restaurantInfo.logoUrl" alt="Logo" class="object-contain p-2 w-full h-full bg-white rounded-lg border-2 border-neutral-300" />
+                      <button
+                        @click="restaurantInfo.logoUrl = ''"
+                        class="absolute -top-2 -right-2 p-1.5 text-white bg-red-500 rounded-full shadow-md transition hover:bg-red-600"
+                        title="Remove logo"
+                      >
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                    
+                    <!-- Upload Button -->
+                    <div class="space-y-2">
+                      <label class="block cursor-pointer">
+                        <input
+                          ref="logoFileInput"
+                          type="file"
+                          accept="image/*"
+                          @change="handleLogoUpload"
+                          class="hidden"
+                        />
+                        <div class="px-4 py-2.5 text-sm font-medium text-center text-white rounded-lg transition bg-primary-600 hover:bg-primary-700">
+                          <svg class="inline-block mr-1.5 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          {{ restaurantInfo.logoUrl ? 'Change Logo' : 'Upload Logo' }}
+                        </div>
+                      </label>
+                      
+                      <!-- Loading State -->
+                      <div v-if="uploadingLogo" class="flex gap-2 justify-center items-center py-2 text-xs text-neutral-600">
+                        <div class="w-3 h-3 rounded-full border-2 animate-spin border-primary-600 border-t-transparent"></div>
+                        <span>Uploading...</span>
+                      </div>
+
+                      <!-- Help Text -->
+                      <p class="text-xs text-center text-neutral-500">Max 5MB • PNG, JPG, GIF</p>
+                    </div>
+                  </div>
+
+                  <!-- Restaurant Name -->
+                  <div>
+                    <label class="block mb-2 text-xs font-medium text-neutral-700">Restaurant Name</label>
+                    <input
+                      v-model="restaurantInfo.name"
+                      type="text"
+                      placeholder="Enter restaurant name"
+                      class="px-3 py-2 w-full text-sm rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <!-- Item Detail Popup Settings -->
+                  <div class="pt-6 mt-6 space-y-4 border-t-2 border-neutral-300">
+                    <div class="flex items-center gap-2 mb-4">
+                      <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                      </svg>
+                      <h3 class="text-base font-semibold text-neutral-900">Item Detail Popup Settings</h3>
+                    </div>
+                    <p class="text-xs text-neutral-600 mb-4">Customize the popup that appears when customers click on menu items</p>
+
+                    <!-- Modal Max Width -->
+                    <div>
+                      <label class="block mb-2 text-xs font-medium text-neutral-700">Popup Size</label>
+                      <select
+                        v-model="globalSettings.itemDetailModal!.maxWidth"
+                        class="px-3 py-2 w-full text-sm rounded-lg border border-neutral-300"
+                      >
+                        <option value="sm">Small</option>
+                        <option value="md">Medium</option>
+                        <option value="lg">Large</option>
+                        <option value="xl">Extra Large</option>
+                        <option value="2xl">2XL</option>
+                        <option value="4xl">4XL</option>
+                        <option value="5xl">5XL (Default)</option>
+                        <option value="6xl">6XL</option>
+                        <option value="full">Full Width</option>
+                      </select>
+                    </div>
+
+                    <!-- Border Radius -->
+                    <div>
+                      <label class="block mb-2 text-xs font-medium text-neutral-700">Border Radius</label>
+                      <select
+                        v-model="globalSettings.itemDetailModal!.borderRadius"
+                        class="px-3 py-2 w-full text-sm rounded-lg border border-neutral-300"
+                      >
+                        <option value="none">None</option>
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large (Default)</option>
+                      </select>
+                    </div>
+
+                    <!-- Image Height -->
+                    <div>
+                      <label class="block mb-2 text-xs font-medium text-neutral-700">Image Height</label>
+                      <select
+                        v-model="globalSettings.itemDetailModal!.imageHeight"
+                        class="px-3 py-2 w-full text-sm rounded-lg border border-neutral-300"
+                      >
+                        <option value="small">Small</option>
+                        <option value="medium">Medium (Default)</option>
+                        <option value="large">Large</option>
+                      </select>
+                    </div>
+
+                    <!-- Close Button Style -->
+                    <div>
+                      <label class="block mb-2 text-xs font-medium text-neutral-700">Close Button Style</label>
+                      <select
+                        v-model="globalSettings.itemDetailModal!.closeButtonStyle"
+                        class="px-3 py-2 w-full text-sm rounded-lg border border-neutral-300"
+                      >
+                        <option value="default">Default</option>
+                        <option value="minimal">Minimal</option>
+                        <option value="hidden">Hidden</option>
+                      </select>
+                    </div>
+
+                    <!-- Show/Hide Sections -->
+                    <div class="px-3 py-3 space-y-2 rounded-lg border bg-white/70">
+                      <label class="block text-xs font-semibold text-neutral-700">Information Sections</label>
+                      <label class="flex justify-between items-center text-sm text-neutral-700">
+                        <span>Show Dietary Information</span>
+                        <input type="checkbox" v-model="globalSettings.itemDetailModal!.showDietaryInfo" class="w-4 h-4 rounded text-primary-600" />
+                      </label>
+                      <label class="flex justify-between items-center text-sm text-neutral-700">
+                        <span>Show Allergen Information</span>
+                        <input type="checkbox" v-model="globalSettings.itemDetailModal!.showAllergenInfo" class="w-4 h-4 rounded text-primary-600" />
+                      </label>
+                      <label class="flex justify-between items-center text-sm text-neutral-700">
+                        <span>Show Additional Details</span>
+                        <input type="checkbox" v-model="globalSettings.itemDetailModal!.showAdditionalDetails" class="w-4 h-4 rounded text-primary-600" />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 border-t border-neutral-200 bg-neutral-50 flex justify-end gap-3">
+              <UiButton @click="showSettingsModal = false" variant="secondary" size="sm">
+                Close
+              </UiButton>
+              <UiButton @click="showSettingsModal = false" variant="primary" size="sm">
+                Save Changes
+              </UiButton>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </NuxtLayout>
 </template>
 
@@ -815,6 +1362,7 @@ const saving = ref(false)
 const isDragging = ref(false)
 const selectedCategory = ref<CategoryLayout | null>(null)
 const isInitialLoad = ref(true) // Track if we're still in initial data load phase
+const showSettingsModal = ref(false)
 
 const availableCategories = ref<any[]>([])
 const flattenCategories = (categories: any[], depth = 0): Array<{ node: any; depth: number }> => {
@@ -840,7 +1388,16 @@ const globalSettings = ref<GlobalLayoutSettings>({
   showRestaurantInfo: true,
   showLogo: true,
   headerAlignment: 'center',
-  tagline: ''
+  tagline: '',
+  itemDetailModal: {
+    maxWidth: '5xl',
+    borderRadius: 'large',
+    showDietaryInfo: true,
+    showAllergenInfo: true,
+    showAdditionalDetails: true,
+    imageHeight: 'medium',
+    closeButtonStyle: 'default'
+  }
 })
 
 const restaurantInfo = ref({
@@ -1483,7 +2040,11 @@ onMounted(async () => {
         designedCategories.value = cloneDeep(existingDesign.layoutConfiguration?.categories || [])
         globalSettings.value = {
           ...globalSettings.value,
-          ...(existingDesign.layoutConfiguration?.globalSettings || {})
+          ...(existingDesign.layoutConfiguration?.globalSettings || {}),
+          itemDetailModal: {
+            ...globalSettings.value.itemDetailModal,
+            ...(existingDesign.layoutConfiguration?.globalSettings?.itemDetailModal || {})
+          }
         }
         globalTheme.value = {
           ...createDefaultTheme(),
@@ -1555,3 +2116,33 @@ watch(
   { deep: true }
 )
 </script>
+
+<style scoped>
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-enter-active > div,
+.modal-leave-active > div {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-from > div,
+.modal-leave-to > div {
+  transform: scale(0.9) translateY(20px);
+  opacity: 0;
+}
+
+@media (max-width: 640px) {
+  .modal-enter-from > div,
+  .modal-leave-to > div {
+    transform: scale(0.95) translateY(10px);
+  }
+}
+</style>

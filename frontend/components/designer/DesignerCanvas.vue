@@ -272,6 +272,39 @@ const handleAddElement = (e: MouseEvent) => {
       }
       break
 
+    case 'advancedCard':
+      elementData = {
+        ...elementData,
+        type: 'advancedCard',
+        width: 350,
+        height: 120,
+        itemName: 'Premium Item',
+        itemDescription: 'Delicious description here',
+        itemPrice: 19.99,
+        backgroundColor: '#1f2937',
+        color: '#ffffff',
+        fontSize: 18,
+        fontFamily: 'Inter',
+        cardStyle: 'modern',
+        cardElevation: 2,
+        borderRadius: 12,
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+      }
+      break
+
+    case 'gradient':
+      elementData = {
+        ...elementData,
+        type: 'gradient',
+        width: 200,
+        height: 200,
+        gradientType: 'linear',
+        gradientAngle: 90,
+        gradientColors: ['#3b82f6', '#8b5cf6'],
+        borderRadius: 8
+      }
+      break
+
     default:
       return
   }
@@ -301,6 +334,12 @@ const getElementIcon = (type: string) => {
     }),
     icon: defineComponent({
       template: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>'
+    }),
+    gradient: defineComponent({
+      template: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg>'
+    }),
+    advancedCard: defineComponent({
+      template: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>'
     })
   }
   return icons[type] || icons.text
@@ -316,6 +355,10 @@ const getElementName = (element: MenuDesignElement) => {
       return element.shapeType || 'Shape'
     case 'menuItem':
       return element.itemName || 'Menu Item'
+    case 'advancedCard':
+      return element.itemName || 'Advanced Card'
+    case 'gradient':
+      return 'Gradient'
     default:
       return element.type
   }

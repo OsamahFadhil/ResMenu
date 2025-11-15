@@ -159,6 +159,70 @@
             </button>
           </div>
         </div>
+
+        <!-- Advanced Text Properties -->
+        <div class="pt-4 border-t border-neutral-700 space-y-3">
+          <h5 class="text-xs font-semibold text-neutral-300 uppercase">Advanced Text</h5>
+          
+          <div>
+            <label class="block text-xs text-neutral-400 mb-1">Letter Spacing</label>
+            <input
+              type="number"
+              :value="store.selectedElement.letterSpacing || 0"
+              @input="updateElement({ letterSpacing: Number(($event.target as HTMLInputElement).value) })"
+              class="w-full px-3 py-2 bg-neutral-700 text-white rounded border border-neutral-600 focus:border-blue-500 focus:outline-none"
+              step="0.1"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs text-neutral-400 mb-1">Text Transform</label>
+            <select
+              :value="store.selectedElement.textTransform || 'none'"
+              @change="updateElement({ textTransform: ($event.target as HTMLSelectElement).value as any })"
+              class="w-full px-3 py-2 bg-neutral-700 text-white rounded border border-neutral-600 focus:border-blue-500 focus:outline-none"
+            >
+              <option value="none">None</option>
+              <option value="uppercase">Uppercase</option>
+              <option value="lowercase">Lowercase</option>
+              <option value="capitalize">Capitalize</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs text-neutral-400 mb-1">Text Shadow</label>
+            <input
+              type="text"
+              :value="store.selectedElement.textShadow || ''"
+              @input="updateElement({ textShadow: ($event.target as HTMLInputElement).value })"
+              class="w-full px-3 py-2 bg-neutral-700 text-white rounded border border-neutral-600 focus:border-blue-500 focus:outline-none text-xs"
+              placeholder="e.g. 2px 2px 4px rgba(0,0,0,0.5)"
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-neutral-400 mb-1">Text Stroke Color</label>
+              <input
+                type="color"
+                :value="store.selectedElement.textStroke || '#000000'"
+                @input="updateElement({ textStroke: ($event.target as HTMLInputElement).value })"
+                class="w-full h-10 bg-neutral-700 rounded border border-neutral-600 cursor-pointer"
+              />
+            </div>
+            <div>
+              <label class="block text-xs text-neutral-400 mb-1">Stroke Width</label>
+              <input
+                type="number"
+                :value="store.selectedElement.textStrokeWidth || 0"
+                @input="updateElement({ textStrokeWidth: Number(($event.target as HTMLInputElement).value) })"
+                class="w-full px-3 py-2 bg-neutral-700 text-white rounded border border-neutral-600 focus:border-blue-500 focus:outline-none"
+                min="0"
+                max="10"
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Image Properties -->
@@ -191,6 +255,90 @@
             <span class="text-white text-sm w-12 text-right">{{ Math.round((store.selectedElement.imageOpacity || 1) * 100) }}%</span>
           </div>
         </div>
+
+        <!-- Advanced Image Properties -->
+        <div class="pt-4 border-t border-neutral-700 space-y-3">
+          <h5 class="text-xs font-semibold text-neutral-300 uppercase">Advanced Image</h5>
+          
+          <div>
+            <label class="block text-xs text-neutral-400 mb-1">Object Fit</label>
+            <select
+              :value="store.selectedElement.objectFit || 'cover'"
+              @change="updateElement({ objectFit: ($event.target as HTMLSelectElement).value as any })"
+              class="w-full px-3 py-2 bg-neutral-700 text-white rounded border border-neutral-600 focus:border-blue-500 focus:outline-none"
+            >
+              <option value="cover">Cover</option>
+              <option value="contain">Contain</option>
+              <option value="fill">Fill</option>
+              <option value="none">None</option>
+              <option value="scale-down">Scale Down</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs text-neutral-400 mb-1">Blur</label>
+            <div class="flex items-center gap-2">
+              <input
+                type="range"
+                min="0"
+                max="20"
+                step="0.5"
+                :value="store.selectedElement.imageBlur || 0"
+                @input="updateElement({ imageBlur: Number(($event.target as HTMLInputElement).value) })"
+                class="flex-1"
+              />
+              <span class="text-white text-sm w-12 text-right">{{ store.selectedElement.imageBlur || 0 }}px</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs text-neutral-400 mb-1">Brightness</label>
+            <div class="flex items-center gap-2">
+              <input
+                type="range"
+                min="0"
+                max="200"
+                step="1"
+                :value="(store.selectedElement.imageBrightness || 100)"
+                @input="updateElement({ imageBrightness: Number(($event.target as HTMLInputElement).value) / 100 })"
+                class="flex-1"
+              />
+              <span class="text-white text-sm w-12 text-right">{{ Math.round((store.selectedElement.imageBrightness || 1) * 100) }}%</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs text-neutral-400 mb-1">Contrast</label>
+            <div class="flex items-center gap-2">
+              <input
+                type="range"
+                min="0"
+                max="200"
+                step="1"
+                :value="(store.selectedElement.imageContrast || 100)"
+                @input="updateElement({ imageContrast: Number(($event.target as HTMLInputElement).value) / 100 })"
+                class="flex-1"
+              />
+              <span class="text-white text-sm w-12 text-right">{{ Math.round((store.selectedElement.imageContrast || 1) * 100) }}%</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs text-neutral-400 mb-1">Saturation</label>
+            <div class="flex items-center gap-2">
+              <input
+                type="range"
+                min="0"
+                max="200"
+                step="1"
+                :value="(store.selectedElement.imageSaturate || 100)"
+                @input="updateElement({ imageSaturate: Number(($event.target as HTMLInputElement).value) / 100 })"
+                class="flex-1"
+              />
+              <span class="text-white text-sm w-12 text-right">{{ Math.round((store.selectedElement.imageSaturate || 1) * 100) }}%</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Shape Properties -->
@@ -206,6 +354,9 @@
           >
             <option value="rectangle">Rectangle</option>
             <option value="circle">Circle</option>
+            <option value="ellipse">Ellipse</option>
+            <option value="triangle">Triangle</option>
+            <option value="line">Line</option>
           </select>
         </div>
 
@@ -266,10 +417,51 @@
             <span class="text-white text-sm w-12 text-right">{{ Math.round((store.selectedElement.opacity || 1) * 100) }}%</span>
           </div>
         </div>
+
+        <!-- Advanced Shape Properties -->
+        <div class="pt-4 border-t border-neutral-700 space-y-3">
+          <h5 class="text-xs font-semibold text-neutral-300 uppercase">Advanced Shape</h5>
+          
+          <div>
+            <label class="block text-xs text-neutral-400 mb-1">Background Gradient</label>
+            <input
+              type="text"
+              :value="store.selectedElement.backgroundGradient || ''"
+              @input="updateElement({ backgroundGradient: ($event.target as HTMLInputElement).value })"
+              class="w-full px-3 py-2 bg-neutral-700 text-white rounded border border-neutral-600 focus:border-blue-500 focus:outline-none text-xs"
+              placeholder="linear-gradient(90deg, #ff0000, #0000ff)"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs text-neutral-400 mb-1">Border Style</label>
+            <select
+              :value="store.selectedElement.borderStyle || 'solid'"
+              @change="updateElement({ borderStyle: ($event.target as HTMLSelectElement).value as any })"
+              class="w-full px-3 py-2 bg-neutral-700 text-white rounded border border-neutral-600 focus:border-blue-500 focus:outline-none"
+            >
+              <option value="solid">Solid</option>
+              <option value="dashed">Dashed</option>
+              <option value="dotted">Dotted</option>
+              <option value="double">Double</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs text-neutral-400 mb-1">Box Shadow</label>
+            <input
+              type="text"
+              :value="store.selectedElement.boxShadow || ''"
+              @input="updateElement({ boxShadow: ($event.target as HTMLInputElement).value })"
+              class="w-full px-3 py-2 bg-neutral-700 text-white rounded border border-neutral-600 focus:border-blue-500 focus:outline-none text-xs"
+              placeholder="e.g. 0 4px 6px rgba(0,0,0,0.1)"
+            />
+          </div>
+        </div>
       </div>
 
       <!-- Menu Item Properties -->
-      <div v-if="store.selectedElement.type === 'menuItem'" class="space-y-4">
+      <div v-if="store.selectedElement.type === 'menuItem' || store.selectedElement.type === 'advancedCard'" class="space-y-4">
         <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Menu Item</h4>
 
         <div>
@@ -343,6 +535,203 @@
             @input="updateElement({ fontSize: Number(($event.target as HTMLInputElement).value) })"
             class="w-full px-3 py-2 bg-neutral-700 text-white rounded border border-neutral-600 focus:border-blue-500 focus:outline-none"
           />
+        </div>
+
+        <!-- Advanced Menu Item Properties -->
+        <div v-if="store.selectedElement.type === 'advancedCard'" class="pt-4 border-t border-neutral-700 space-y-3">
+          <h5 class="text-xs font-semibold text-neutral-300 uppercase">Advanced Card</h5>
+          
+          <div>
+            <label class="block text-xs text-neutral-400 mb-1">Card Style</label>
+            <select
+              :value="store.selectedElement.cardStyle || 'modern'"
+              @change="updateElement({ cardStyle: ($event.target as HTMLSelectElement).value as any })"
+              class="w-full px-3 py-2 bg-neutral-700 text-white rounded border border-neutral-600 focus:border-blue-500 focus:outline-none"
+            >
+              <option value="modern">Modern</option>
+              <option value="elegant">Elegant</option>
+              <option value="minimal">Minimal</option>
+              <option value="bold">Bold</option>
+              <option value="glassmorphism">Glassmorphism</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs text-neutral-400 mb-1">Card Elevation</label>
+            <div class="flex items-center gap-2">
+              <input
+                type="range"
+                min="0"
+                max="5"
+                step="1"
+                :value="store.selectedElement.cardElevation || 0"
+                @input="updateElement({ cardElevation: Number(($event.target as HTMLInputElement).value) })"
+                class="flex-1"
+              />
+              <span class="text-white text-sm w-12 text-right">{{ store.selectedElement.cardElevation || 0 }}</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs text-neutral-400 mb-1">Badge</label>
+            <input
+              type="text"
+              :value="store.selectedElement.itemBadge || ''"
+              @input="updateElement({ itemBadge: ($event.target as HTMLInputElement).value })"
+              class="w-full px-3 py-2 bg-neutral-700 text-white rounded border border-neutral-600 focus:border-blue-500 focus:outline-none"
+              placeholder="e.g. NEW, POPULAR"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs text-neutral-400 mb-1">Tag</label>
+            <input
+              type="text"
+              :value="store.selectedElement.itemTag || ''"
+              @input="updateElement({ itemTag: ($event.target as HTMLInputElement).value })"
+              class="w-full px-3 py-2 bg-neutral-700 text-white rounded border border-neutral-600 focus:border-blue-500 focus:outline-none"
+              placeholder="e.g. Vegetarian, Spicy"
+            />
+          </div>
+
+          <div>
+            <label class="flex items-center gap-2">
+              <input
+                type="checkbox"
+                :checked="store.selectedElement.showDivider || false"
+                @change="updateElement({ showDivider: ($event.target as HTMLInputElement).checked })"
+                class="w-4 h-4 rounded text-primary-600"
+              />
+              <span class="text-xs text-neutral-400">Show Divider</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gradient Properties -->
+      <div v-if="store.selectedElement.type === 'gradient'" class="space-y-4">
+        <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Gradient</h4>
+
+        <div>
+          <label class="block text-xs text-neutral-400 mb-1">Gradient Type</label>
+          <select
+            :value="store.selectedElement.gradientType || 'linear'"
+            @change="updateElement({ gradientType: ($event.target as HTMLSelectElement).value as any })"
+            class="w-full px-3 py-2 bg-neutral-700 text-white rounded border border-neutral-600 focus:border-blue-500 focus:outline-none"
+          >
+            <option value="linear">Linear</option>
+            <option value="radial">Radial</option>
+            <option value="conic">Conic</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs text-neutral-400 mb-1">Gradient Angle (for linear/conic)</label>
+          <div class="flex items-center gap-2">
+            <input
+              type="range"
+              min="0"
+              max="360"
+              step="1"
+              :value="store.selectedElement.gradientAngle || 90"
+              @input="updateElement({ gradientAngle: Number(($event.target as HTMLInputElement).value) })"
+              class="flex-1"
+            />
+            <span class="text-white text-sm w-12 text-right">{{ store.selectedElement.gradientAngle || 90 }}°</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs text-neutral-400 mb-1">Gradient Colors (comma-separated)</label>
+          <input
+            type="text"
+            :value="store.selectedElement.gradientColors?.join(', ') || '#000000, #ffffff'"
+            @input="updateElement({ gradientColors: ($event.target as HTMLInputElement).value.split(',').map(c => c.trim()) })"
+            class="w-full px-3 py-2 bg-neutral-700 text-white rounded border border-neutral-600 focus:border-blue-500 focus:outline-none text-xs"
+            placeholder="#ff0000, #0000ff, #00ff00"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs text-neutral-400 mb-1">Box Shadow</label>
+          <input
+            type="text"
+            :value="store.selectedElement.boxShadow || ''"
+            @input="updateElement({ boxShadow: ($event.target as HTMLInputElement).value })"
+            class="w-full px-3 py-2 bg-neutral-700 text-white rounded border border-neutral-600 focus:border-blue-500 focus:outline-none text-xs"
+            placeholder="e.g. 0 4px 6px rgba(0,0,0,0.1)"
+          />
+        </div>
+      </div>
+
+      <!-- Global Advanced Effects (for all elements) -->
+      <div class="pt-4 border-t border-neutral-700 space-y-4">
+        <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Advanced Effects</h4>
+
+        <div>
+          <label class="block text-xs text-neutral-400 mb-1">Box Shadow</label>
+          <input
+            type="text"
+            :value="store.selectedElement.boxShadow || ''"
+            @input="updateElement({ boxShadow: ($event.target as HTMLInputElement).value })"
+            class="w-full px-3 py-2 bg-neutral-700 text-white rounded border border-neutral-600 focus:border-blue-500 focus:outline-none text-xs"
+            placeholder="e.g. 0 4px 6px rgba(0,0,0,0.1)"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs text-neutral-400 mb-1">Scale</label>
+          <div class="flex items-center gap-2">
+            <input
+              type="range"
+              min="0.5"
+              max="2"
+              step="0.1"
+              :value="store.selectedElement.scale || 1"
+              @input="updateElement({ scale: Number(($event.target as HTMLInputElement).value) })"
+              class="flex-1"
+            />
+            <span class="text-white text-sm w-12 text-right">{{ (store.selectedElement.scale || 1).toFixed(1) }}x</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs text-neutral-400 mb-1">Skew X</label>
+            <input
+              type="number"
+              :value="store.selectedElement.skewX || 0"
+              @input="updateElement({ skewX: Number(($event.target as HTMLInputElement).value) })"
+              class="w-full px-3 py-2 bg-neutral-700 text-white rounded border border-neutral-600 focus:border-blue-500 focus:outline-none"
+              step="1"
+            />
+          </div>
+          <div>
+            <label class="block text-xs text-neutral-400 mb-1">Skew Y</label>
+            <input
+              type="number"
+              :value="store.selectedElement.skewY || 0"
+              @input="updateElement({ skewY: Number(($event.target as HTMLInputElement).value) })"
+              class="w-full px-3 py-2 bg-neutral-700 text-white rounded border border-neutral-600 focus:border-blue-500 focus:outline-none"
+              step="1"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs text-neutral-400 mb-1">Blur Filter</label>
+          <div class="flex items-center gap-2">
+            <input
+              type="range"
+              min="0"
+              max="20"
+              step="0.5"
+              :value="store.selectedElement.blur || 0"
+              @input="updateElement({ blur: Number(($event.target as HTMLInputElement).value) })"
+              class="flex-1"
+            />
+            <span class="text-white text-sm w-12 text-right">{{ store.selectedElement.blur || 0 }}px</span>
+          </div>
         </div>
       </div>
 

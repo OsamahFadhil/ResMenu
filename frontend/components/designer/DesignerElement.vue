@@ -2,17 +2,7 @@
   <div
     v-if="element.visible"
     ref="elementRef"
-    :style="{
-      position: 'absolute',
-      left: `${element.x * (zoom / 100)}px`,
-      top: `${element.y * (zoom / 100)}px`,
-      width: `${element.width * (zoom / 100)}px`,
-      height: `${element.height * (zoom / 100)}px`,
-      transform: `rotate(${element.rotation}deg)`,
-      transformOrigin: 'center',
-      cursor: element.locked ? 'not-allowed' : 'move',
-      zIndex: element.zIndex
-    }"
+    :style="getContainerStyle()"
     :class="[
       'group',
       isSelected && 'ring-2 ring-blue-500'
@@ -28,18 +18,7 @@
         contenteditable
         @input="handleTextInput"
         @blur="handleTextBlur"
-        :style="{
-          fontSize: `${element.fontSize}px`,
-          fontFamily: element.fontFamily,
-          fontWeight: element.fontWeight,
-          color: element.color,
-          textAlign: element.textAlign,
-          lineHeight: element.lineHeight,
-          width: '100%',
-          height: '100%',
-          outline: 'none',
-          padding: '4px'
-        }"
+        :style="getTextStyle()"
       >
         {{ element.text }}
       </div>
@@ -48,74 +27,77 @@
       <img
         v-else-if="element.type === 'image'"
         :src="element.imageUrl"
-        :style="{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          opacity: element.imageOpacity,
-          filter: element.imageFilter
-        }"
+        :style="getImageStyle()"
         draggable="false"
       />
+      
+      <!-- Gradient Element -->
+      <div
+        v-else-if="element.type === 'gradient'"
+        :style="getGradientStyle()"
+      ></div>
 
       <!-- Shape Element -->
       <div
         v-else-if="element.type === 'shape'"
-        :style="{
-          width: '100%',
-          height: '100%',
-          backgroundColor: element.backgroundColor,
-          border: `${element.borderWidth}px solid ${element.borderColor}`,
-          borderRadius: element.shapeType === 'circle' ? '50%' : `${element.borderRadius}px`,
-          opacity: element.opacity
-        }"
+        :style="getShapeStyle()"
       ></div>
 
       <!-- Menu Item Element -->
       <div
-        v-else-if="element.type === 'menuItem'"
-        class="flex items-center gap-3 p-3 h-full"
-        :style="{
-          backgroundColor: element.backgroundColor,
-          borderRadius: '8px'
-        }"
+        v-else-if="element.type === 'menuItem' || element.type === 'advancedCard'"
+        :class="getMenuItemClass()"
+        :style="getMenuItemStyle()"
       >
         <div
           v-if="element.itemImage"
-          class="w-16 h-16 rounded-lg bg-neutral-700 flex-shrink-0 overflow-hidden"
+          class="flex-shrink-0 overflow-hidden"
+          :style="getItemImageStyle()"
         >
           <img :src="element.itemImage" class="w-full h-full object-cover" />
         </div>
         <div class="flex-1 min-w-0">
-          <div
-            class="font-semibold truncate"
-            :style="{
-              color: element.color,
-              fontSize: `${element.fontSize}px`,
-              fontFamily: element.fontFamily
-            }"
-          >
-            {{ element.itemName }}
+          <div class="flex items-center gap-2 mb-1">
+            <div
+              class="font-semibold truncate"
+              :style="getItemNameStyle()"
+            >
+              {{ element.itemName }}
+            </div>
+            <span
+              v-if="element.itemBadge"
+              class="px-2 py-0.5 text-xs font-bold rounded-full"
+              :style="getBadgeStyle()"
+            >
+              {{ element.itemBadge }}
+            </span>
           </div>
           <div
-            class="text-sm opacity-70 truncate"
-            :style="{
-              color: element.color,
-              fontSize: `${(element.fontSize || 16) * 0.875}px`
-            }"
+            v-if="element.itemTag"
+            class="text-xs mb-1"
+            :style="getTagStyle()"
+          >
+            {{ element.itemTag }}
+          </div>
+          <div
+            v-if="element.itemDescription"
+            class="truncate"
+            :style="getItemDescriptionStyle()"
           >
             {{ element.itemDescription }}
           </div>
         </div>
         <div
           class="font-bold whitespace-nowrap"
-          :style="{
-            color: element.color,
-            fontSize: `${element.fontSize}px`
-          }"
+          :style="getPriceStyle()"
         >
           ${{ element.itemPrice?.toFixed(2) }}
         </div>
+        <div
+          v-if="element.showDivider"
+          class="absolute bottom-0 left-0 right-0 h-px"
+          :style="getDividerStyle()"
+        ></div>
       </div>
     </div>
 
@@ -195,6 +177,50 @@ const resizeHandles = [
   { position: 'w', style: { top: '50%', left: '-6px', transform: 'translateY(-50%)' }, cursor: 'cursor-w-resize' }
 ]
 
+const getContainerStyle = () => {
+  const el = props.element
+  const transforms: string[] = []
+  
+  if (el.rotation) transforms.push(`rotate(${el.rotation}deg)`)
+  if (el.scale !== undefined) transforms.push(`scale(${el.scale})`)
+  if (el.skewX) transforms.push(`skewX(${el.skewX}deg)`)
+  if (el.skewY) transforms.push(`skewY(${el.skewY}deg)`)
+  
+  const style: any = {
+    position: 'absolute',
+    left: `${el.x * (props.zoom / 100)}px`,
+    top: `${el.y * (props.zoom / 100)}px`,
+    width: `${el.width * (props.zoom / 100)}px`,
+    height: `${el.height * (props.zoom / 100)}px`,
+    transformOrigin: el.transformOrigin || 'center',
+    cursor: el.locked ? 'not-allowed' : 'move',
+    zIndex: el.zIndex
+  }
+  
+  if (transforms.length > 0) {
+    style.transform = transforms.join(' ')
+  }
+  
+  // Apply filters
+  const filters: string[] = []
+  if (el.blur) filters.push(`blur(${el.blur}px)`)
+  if (el.brightness !== undefined) filters.push(`brightness(${el.brightness})`)
+  if (el.contrast !== undefined) filters.push(`contrast(${el.contrast})`)
+  if (el.saturate !== undefined) filters.push(`saturate(${el.saturate})`)
+  if (el.hueRotate !== undefined) filters.push(`hue-rotate(${el.hueRotate}deg)`)
+  if (el.invert !== undefined) filters.push(`invert(${el.invert})`)
+  if (el.sepia !== undefined) filters.push(`sepia(${el.sepia})`)
+  if (filters.length > 0) {
+    style.filter = filters.join(' ')
+  }
+  
+  if (el.backdropFilter) {
+    style.backdropFilter = el.backdropFilter
+  }
+  
+  return style
+}
+
 const getElementStyle = () => {
   const baseStyle: any = {}
 
@@ -204,6 +230,235 @@ const getElementStyle = () => {
   }
 
   return baseStyle
+}
+
+const getTextStyle = () => {
+  const el = props.element
+  const style: any = {
+    fontSize: `${el.fontSize || 16}px`,
+    fontFamily: el.fontFamily || 'Inter',
+    fontWeight: el.fontWeight || 'normal',
+    color: el.color || '#000000',
+    textAlign: el.textAlign || 'left',
+    lineHeight: el.lineHeight || 1.5,
+    width: '100%',
+    height: '100%',
+    outline: 'none',
+    padding: '4px'
+  }
+  
+  if (el.letterSpacing) style.letterSpacing = `${el.letterSpacing}px`
+  if (el.textTransform) style.textTransform = el.textTransform
+  if (el.textShadow) style.textShadow = el.textShadow
+  if (el.textStroke && el.textStrokeWidth) {
+    style.WebkitTextStroke = `${el.textStrokeWidth}px ${el.textStroke}`
+  }
+  
+  return style
+}
+
+const getImageStyle = () => {
+  const el = props.element
+  const filters: string[] = []
+  
+  if (el.imageBlur) filters.push(`blur(${el.imageBlur}px)`)
+  if (el.imageBrightness !== undefined) filters.push(`brightness(${el.imageBrightness})`)
+  if (el.imageContrast !== undefined) filters.push(`contrast(${el.imageContrast})`)
+  if (el.imageSaturate !== undefined) filters.push(`saturate(${el.imageSaturate})`)
+  
+  const style: any = {
+    width: '100%',
+    height: '100%',
+    objectFit: el.objectFit || 'cover',
+    opacity: el.imageOpacity !== undefined ? el.imageOpacity : 1
+  }
+  
+  if (filters.length > 0) {
+    style.filter = filters.join(' ')
+  } else if (el.imageFilter) {
+    style.filter = el.imageFilter
+  }
+  
+  return style
+}
+
+const getShapeStyle = () => {
+  const el = props.element
+  const style: any = {
+    width: '100%',
+    height: '100%',
+    opacity: el.opacity !== undefined ? el.opacity : 1
+  }
+  
+  // Background
+  if (el.backgroundGradient) {
+    style.background = el.backgroundGradient
+  } else if (el.backgroundColor) {
+    style.backgroundColor = el.backgroundColor
+  }
+  
+  if (el.backgroundImage) {
+    style.backgroundImage = `url(${el.backgroundImage})`
+    style.backgroundSize = 'cover'
+    style.backgroundPosition = 'center'
+  }
+  
+  // Border
+  if (el.borderWidth) {
+    const borderStyle = el.borderStyle || 'solid'
+    style.border = `${el.borderWidth}px ${borderStyle} ${el.borderColor || 'transparent'}`
+  }
+  
+  // Border radius
+  if (el.shapeType === 'circle' || el.shapeType === 'ellipse') {
+    style.borderRadius = '50%'
+  } else if (el.borderRadius !== undefined) {
+    style.borderRadius = `${el.borderRadius}px`
+  }
+  
+  // Shadows
+  if (el.boxShadow) style.boxShadow = el.boxShadow
+  if (el.dropShadow) style.filter = `drop-shadow(${el.dropShadow})`
+  
+  return style
+}
+
+const getGradientStyle = () => {
+  const el = props.element
+  const style: any = {
+    width: '100%',
+    height: '100%'
+  }
+  
+  if (el.gradientType === 'radial') {
+    style.background = `radial-gradient(circle, ${el.gradientColors?.join(', ') || '#000000, #ffffff'})`
+  } else if (el.gradientType === 'conic') {
+    style.background = `conic-gradient(from ${el.gradientAngle || 0}deg, ${el.gradientColors?.join(', ') || '#000000, #ffffff'})`
+  } else {
+    const angle = el.gradientAngle || 90
+    style.background = `linear-gradient(${angle}deg, ${el.gradientColors?.join(', ') || '#000000, #ffffff'})`
+  }
+  
+  if (el.opacity !== undefined) style.opacity = el.opacity
+  if (el.borderRadius !== undefined) style.borderRadius = `${el.borderRadius}px`
+  if (el.boxShadow) style.boxShadow = el.boxShadow
+  
+  return style
+}
+
+const getMenuItemClass = () => {
+  const el = props.element
+  const classes = ['flex', 'items-center', 'gap-3', 'p-3', 'h-full', 'relative']
+  
+  if (el.type === 'advancedCard') {
+    if (el.cardStyle === 'glassmorphism') {
+      classes.push('backdrop-blur-md', 'bg-white/10')
+    }
+  }
+  
+  return classes.join(' ')
+}
+
+const getMenuItemStyle = () => {
+  const el = props.element
+  const style: any = {}
+  
+  if (el.type === 'advancedCard') {
+    if (el.cardStyle === 'glassmorphism') {
+      style.backgroundColor = 'rgba(255, 255, 255, 0.1)'
+      style.backdropFilter = 'blur(10px)'
+    } else if (el.backgroundColor) {
+      style.backgroundColor = el.backgroundColor
+    }
+    
+    if (el.cardStyle === 'elegant') {
+      style.borderRadius = '12px'
+      style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)'
+    } else if (el.cardStyle === 'bold') {
+      style.borderRadius = '8px'
+      style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.2)'
+    } else if (el.cardStyle === 'minimal') {
+      style.borderRadius = '4px'
+      style.border = '1px solid rgba(0, 0, 0, 0.1)'
+    } else {
+      style.borderRadius = el.borderRadius !== undefined ? `${el.borderRadius}px` : '8px'
+    }
+    
+    if (el.cardElevation) {
+      style.boxShadow = `0 ${el.cardElevation * 2}px ${el.cardElevation * 4}px rgba(0, 0, 0, 0.${el.cardElevation})`
+    }
+  } else {
+    style.backgroundColor = el.backgroundColor || '#1f2937'
+    style.borderRadius = '8px'
+  }
+  
+  if (el.boxShadow) style.boxShadow = el.boxShadow
+  
+  return style
+}
+
+const getItemImageStyle = () => {
+  const el = props.element
+  const style: any = {
+    width: '64px',
+    height: '64px',
+    borderRadius: '8px'
+  }
+  
+  if (el.cardStyle === 'elegant') {
+    style.borderRadius = '12px'
+  } else if (el.cardStyle === 'minimal') {
+    style.borderRadius = '4px'
+  }
+  
+  return style
+}
+
+const getItemNameStyle = () => {
+  const el = props.element
+  return {
+    color: el.color || '#ffffff',
+    fontSize: `${el.fontSize || 18}px`,
+    fontFamily: el.fontFamily || 'Inter'
+  }
+}
+
+const getItemDescriptionStyle = () => {
+  const el = props.element
+  return {
+    color: el.color || '#ffffff',
+    fontSize: `${(el.fontSize || 18) * 0.875}px`,
+    opacity: 0.8
+  }
+}
+
+const getPriceStyle = () => {
+  const el = props.element
+  return {
+    color: el.color || '#ffffff',
+    fontSize: `${el.fontSize || 18}px`,
+    fontFamily: el.fontFamily || 'Inter'
+  }
+}
+
+const getBadgeStyle = () => {
+  return {
+    backgroundColor: '#dc2626',
+    color: '#ffffff'
+  }
+}
+
+const getTagStyle = () => {
+  return {
+    color: '#9ca3af',
+    fontStyle: 'italic'
+  }
+}
+
+const getDividerStyle = () => {
+  return {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)'
+  }
 }
 
 const handleMouseDown = (e: MouseEvent) => {

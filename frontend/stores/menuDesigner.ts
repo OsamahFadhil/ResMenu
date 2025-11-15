@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 export interface MenuDesignElement {
   id: string
-  type: 'text' | 'image' | 'menuItem' | 'shape' | 'icon'
+  type: 'text' | 'image' | 'menuItem' | 'shape' | 'icon' | 'gradient' | 'advancedCard'
   x: number
   y: number
   width: number
@@ -20,25 +20,70 @@ export interface MenuDesignElement {
   color?: string
   textAlign?: 'left' | 'center' | 'right'
   lineHeight?: number
+  letterSpacing?: number
+  textTransform?: 'none' | 'uppercase' | 'lowercase' | 'capitalize'
+  textShadow?: string
+  textStroke?: string
+  textStrokeWidth?: number
 
   // Image properties
   imageUrl?: string
   imageOpacity?: number
   imageFilter?: string
+  imageBlur?: number
+  imageBrightness?: number
+  imageContrast?: number
+  imageSaturate?: number
+  objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down'
 
   // Menu item properties
   itemName?: string
   itemDescription?: string
   itemPrice?: number
   itemImage?: string
+  itemBadge?: string
+  itemTag?: string
+  showDivider?: boolean
 
   // Shape properties
-  shapeType?: 'rectangle' | 'circle' | 'line' | 'triangle'
+  shapeType?: 'rectangle' | 'circle' | 'line' | 'triangle' | 'ellipse' | 'polygon'
   backgroundColor?: string
+  backgroundGradient?: string
+  backgroundImage?: string
   borderColor?: string
   borderWidth?: number
   borderRadius?: number
+  borderStyle?: 'solid' | 'dashed' | 'dotted' | 'double'
   opacity?: number
+
+  // Advanced styling properties
+  boxShadow?: string
+  dropShadow?: string
+  backdropFilter?: string
+  blur?: number
+  brightness?: number
+  contrast?: number
+  saturate?: number
+  hueRotate?: number
+  invert?: number
+  sepia?: number
+  
+  // Transform effects
+  scale?: number
+  skewX?: number
+  skewY?: number
+  transformOrigin?: string
+  
+  // Advanced card properties
+  cardStyle?: 'modern' | 'elegant' | 'minimal' | 'bold' | 'glassmorphism'
+  cardElevation?: number
+  cardHover?: boolean
+  
+  // Gradient properties
+  gradientType?: 'linear' | 'radial' | 'conic'
+  gradientColors?: string[]
+  gradientAngle?: number
+  gradientStops?: number[]
 }
 
 export interface MenuDesignTemplate {
