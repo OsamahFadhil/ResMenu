@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Ox0QW5GjoiM=",
+  "dgSpecHash": "GxsLB3ZRm/o=",
   "success": true,
-  "projectFilePath": "C:\\Users\\aliha\\RiderProjects\\ResMenu\\backend\\src\\Menufy.API\\Menufy.API.csproj",
+  "projectFilePath": "C:\\Users\\aliha\\RiderProjects\\ResMenu\\backend\\src\\MenuFy.API\\Menufy.API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\aliha\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
     "C:\\Users\\aliha\\.nuget\\packages\\fluentvalidation\\11.9.0\\fluentvalidation.11.9.0.nupkg.sha512",

@@ -65,7 +65,10 @@ public class SaveMenuDesignCommandHandler : IRequestHandler<SaveMenuDesignComman
             GlobalTheme = JsonSerializer.Serialize(data.GlobalTheme),
             Version = latestVersion + 1,
             IsActive = data.SetAsActive,
-            Name = data.Name
+            Name = data.Name,
+            HeaderColor = data.HeaderColor,
+            HeaderImageUrl = data.HeaderImageUrl,
+            HeaderDisplayMode = data.HeaderDisplayMode
         };
 
         _context.MenuDesigns.Add(menuDesign);

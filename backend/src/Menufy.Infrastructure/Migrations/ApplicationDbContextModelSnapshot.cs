@@ -91,6 +91,15 @@ namespace Menufy.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("jsonb");
 
+                    b.Property<string>("HeaderColor")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("HeaderDisplayMode")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("HeaderImageUrl")
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")

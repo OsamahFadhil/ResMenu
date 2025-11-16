@@ -1,4 +1,5 @@
 using Menufy.Application.Features.MenuTemplates.DTOs;
+using Menufy.Domain.Enums;
 
 namespace Menufy.Application.Features.MenuDesigns.DTOs;
 
@@ -60,6 +61,11 @@ public class MenuDesignDto
     public string? Name { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+    public string? HeaderImageUrl { get; set; }
+
+    public string? HeaderColor { get; set; }
+
+    public DisplayMode? HeaderDisplayMode { get; set; }
 }
 
 /// <summary>
@@ -72,6 +78,11 @@ public class SaveMenuDesignDto
     public MenuTemplateThemeDto GlobalTheme { get; set; } = new();
     public string? Name { get; set; }
     public bool SetAsActive { get; set; } = true;
+    public string? HeaderImageUrl { get; set; }
+
+    public string? HeaderColor { get; set; }
+
+    public DisplayMode? HeaderDisplayMode { get; set; } 
 }
 
 /// <summary>

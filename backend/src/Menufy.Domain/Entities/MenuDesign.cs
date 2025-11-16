@@ -1,4 +1,5 @@
 using Menufy.Domain.Common;
+using Menufy.Domain.Enums;
 
 namespace Menufy.Domain.Entities;
 
@@ -37,7 +38,7 @@ public class MenuDesign : BaseEntity
 
     public string? HeaderColor { get; set; }
 
-    public string? HeaderDisplayMode { get; set; } // "row", "column"
+    public DisplayMode? HeaderDisplayMode { get; set; } // "row", "column"
     
     // Navigation properties
     public Restaurant Restaurant { get; set; } = null!;
