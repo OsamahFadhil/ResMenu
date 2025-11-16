@@ -213,6 +213,58 @@
                   <span class="text-xs text-neutral-500">Updates instantly as you customize</span>
                 </div>
                 <div class="overflow-hidden rounded-3xl border border-neutral-200" :style="previewBackgroundStyle">
+                  <!-- Restaurant Header in Preview -->
+                  <div class="relative overflow-hidden py-8 sm:py-12" :style="headerContainerStyle">
+                    <div class="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                      <div :class="headerContentClass">
+                        <!-- Logo -->
+                        <div
+                          v-if="globalSettings.showLogo && restaurantInfo.logoUrl"
+                          class="overflow-hidden rounded-lg border-2 border-white shadow-md backdrop-blur bg-white/80"
+                          :class="[logoOrderClass, globalSettings.headerAlignment === 'left' ? 'w-16 h-16 sm:w-20 sm:h-20' : globalSettings.headerAlignment === 'right' ? 'w-16 h-16 sm:w-20 sm:h-20 ml-auto' : 'mx-auto w-16 h-16 sm:w-20 sm:h-20']"
+                        >
+                          <img :src="restaurantInfo.logoUrl" alt="Logo" class="object-cover w-full h-full" />
+                        </div>
+                        
+                        <!-- Restaurant Name and Info -->
+                        <div :class="headerTextAlignClass">
+                          <h1 
+                            class="text-3xl sm:text-4xl md:text-5xl font-bold tracking-wide mb-3 sm:mb-4"
+                            :style="{ 
+                              fontFamily: globalTheme.fontFamily || 'Inter',
+                              letterSpacing: '0.05em'
+                            }"
+                          >
+                            {{ restaurantInfo.name }}
+                          </h1>
+                          
+                          <!-- Decorative Line -->
+                          <div 
+                            class="mb-4 sm:mb-6"
+                            :class="globalSettings.headerAlignment === 'left' ? 'w-24 h-0.5 sm:w-32' : globalSettings.headerAlignment === 'right' ? 'w-24 h-0.5 sm:w-32 ml-auto' : 'mx-auto w-24 h-0.5 sm:w-32'"
+                            :style="{ backgroundColor: globalTheme.primaryColor || '#dc2626' }"
+                          ></div>
+                          
+                          <!-- Tagline -->
+                          <p 
+                            v-if="globalSettings.tagline" 
+                            class="text-base sm:text-lg md:text-xl font-medium mb-4 sm:mb-6 italic opacity-90"
+                          >
+                            {{ globalSettings.tagline }}
+                          </p>
+                          
+                          <!-- Address -->
+                          <p
+                            v-if="globalSettings.showRestaurantInfo && restaurantInfo.address"
+                            class="text-sm sm:text-base opacity-70"
+                          >
+                            {{ restaurantInfo.address }}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
                   <PublicMenuCategoryTree
                     v-if="previewCategories.length"
                     :categories="previewCategories"
@@ -564,6 +616,74 @@
                   >
                     {{ align }}
                   </button>
+                </div>
+              </div>
+
+              <!-- Header Background Color -->
+              <div>
+                <label class="block mb-2 text-xs font-medium text-neutral-700">Header Background Color</label>
+                <input
+                  v-model="globalSettings.headerBackgroundColor"
+                  type="color"
+                  class="w-full h-10 rounded-lg border-2 cursor-pointer border-neutral-300"
+                />
+                <p class="mt-1 text-xs text-neutral-500">
+                  Background color for the header. Used as fallback when no image is set.
+                </p>
+              </div>
+
+              <!-- Header Background Image -->
+              <div class="space-y-3">
+                <label class="block text-xs font-medium text-neutral-700">Header Background Image</label>
+                
+                <div v-if="globalSettings.headerBackgroundImage" class="relative">
+                  <img
+                    :src="globalSettings.headerBackgroundImage"
+                    alt="Header background preview"
+                    class="object-cover w-full h-32 rounded-lg border border-neutral-300"
+                  />
+                  <button
+                    @click="globalSettings.headerBackgroundImage = null"
+                    class="absolute top-2 right-2 p-1.5 text-white bg-red-500 rounded-full shadow-md transition hover:bg-red-600"
+                    title="Remove header background"
+                  >
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="space-y-2">
+                  <label class="block cursor-pointer">
+                    <input
+                      ref="headerBackgroundFileInput"
+                      type="file"
+                      accept="image/*"
+                      @change="handleHeaderBackgroundUpload"
+                      class="hidden"
+                    />
+                    <div class="px-4 py-2.5 text-sm font-medium text-center text-white rounded-lg transition bg-primary-600 hover:bg-primary-700">
+                      <svg class="inline-block mr-1.5 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      {{ globalSettings.headerBackgroundImage ? 'Change Header Background' : 'Upload Header Background' }}
+                    </div>
+                  </label>
+
+                  <div v-if="uploadingHeaderBackground" class="flex gap-2 justify-center items-center py-2 text-xs text-neutral-600">
+                    <div class="w-3 h-3 rounded-full border-2 animate-spin border-primary-600 border-t-transparent"></div>
+                    <span>Uploading header background...</span>
+                  </div>
+
+                  <div>
+                    <label class="block mb-1 text-xs font-medium text-neutral-700">Image URL</label>
+                    <input
+                      v-model="globalSettings.headerBackgroundImage"
+                      type="text"
+                      placeholder="https://example.com/header-bg.jpg"
+                      class="px-3 py-2 w-full text-sm rounded-lg border border-neutral-300"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -1142,6 +1262,74 @@
                     </div>
                   </div>
 
+                  <!-- Header Background Color -->
+                  <div>
+                    <label class="block mb-2 text-xs font-medium text-neutral-700">Header Background Color</label>
+                    <input
+                      v-model="globalSettings.headerBackgroundColor"
+                      type="color"
+                      class="w-full h-10 rounded-lg border-2 cursor-pointer border-neutral-300"
+                    />
+                    <p class="mt-1 text-xs text-neutral-500">
+                      Background color for the header. Used as fallback when no image is set.
+                    </p>
+                  </div>
+
+                  <!-- Header Background Image -->
+                  <div class="space-y-3">
+                    <label class="block text-xs font-medium text-neutral-700">Header Background Image</label>
+                    
+                    <div v-if="globalSettings.headerBackgroundImage" class="relative">
+                      <img
+                        :src="globalSettings.headerBackgroundImage"
+                        alt="Header background preview"
+                        class="object-cover w-full h-32 rounded-lg border border-neutral-300"
+                      />
+                      <button
+                        @click="globalSettings.headerBackgroundImage = null"
+                        class="absolute top-2 right-2 p-1.5 text-white bg-red-500 rounded-full shadow-md transition hover:bg-red-600"
+                        title="Remove header background"
+                      >
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <div class="space-y-2">
+                      <label class="block cursor-pointer">
+                        <input
+                          ref="headerBackgroundFileInput"
+                          type="file"
+                          accept="image/*"
+                          @change="handleHeaderBackgroundUpload"
+                          class="hidden"
+                        />
+                        <div class="px-4 py-2.5 text-sm font-medium text-center text-white rounded-lg transition bg-primary-600 hover:bg-primary-700">
+                          <svg class="inline-block mr-1.5 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          {{ globalSettings.headerBackgroundImage ? 'Change Header Background' : 'Upload Header Background' }}
+                        </div>
+                      </label>
+
+                      <div v-if="uploadingHeaderBackground" class="flex gap-2 justify-center items-center py-2 text-xs text-neutral-600">
+                        <div class="w-3 h-3 rounded-full border-2 animate-spin border-primary-600 border-t-transparent"></div>
+                        <span>Uploading header background...</span>
+                      </div>
+
+                      <div>
+                        <label class="block mb-1 text-xs font-medium text-neutral-700">Image URL</label>
+                        <input
+                          v-model="globalSettings.headerBackgroundImage"
+                          type="text"
+                          placeholder="https://example.com/header-bg.jpg"
+                          class="px-3 py-2 w-full text-sm rounded-lg border border-neutral-300"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
                   <!-- Header Tagline -->
                   <div>
                     <label class="block mb-2 text-xs font-medium text-neutral-700">Tagline / Subtitle</label>
@@ -1388,6 +1576,8 @@ const globalSettings = ref<GlobalLayoutSettings>({
   showRestaurantInfo: true,
   showLogo: true,
   headerAlignment: 'center',
+  headerBackgroundImage: null,
+  headerBackgroundColor: '#ffffff',
   tagline: '',
   itemDetailModal: {
     maxWidth: '5xl',
@@ -1410,6 +1600,8 @@ const logoFileInput = ref<HTMLInputElement | null>(null)
 const uploadingLogo = ref(false)
 const backgroundFileInput = ref<HTMLInputElement | null>(null)
 const uploadingBackground = ref(false)
+const headerBackgroundFileInput = ref<HTMLInputElement | null>(null)
+const uploadingHeaderBackground = ref(false)
 const restaurantCurrency = ref('USD')
 
 const cloneDeep = <T>(value: T): T => {
@@ -1440,6 +1632,20 @@ const headerContainerStyle = computed(() => {
   const accent = globalTheme.value.accentColor || '#f59e0b'
   const surface = globalTheme.value.surfaceColor || '#ffffff'
   const text = globalTheme.value.textColor || '#1f2937'
+  const headerBgColor = globalSettings.value.headerBackgroundColor || surface
+  const headerBgImage = globalSettings.value.headerBackgroundImage
+
+  // If header has a background image, use it
+  if (headerBgImage) {
+    return {
+      backgroundImage: `url("${headerBgImage}")`,
+      backgroundColor: headerBgColor, // Fallback color
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      color: text
+    }
+  }
 
   if (globalSettings.value.headerStyle === 'banner') {
     // Banner style: use gradient background
@@ -1459,7 +1665,7 @@ const headerContainerStyle = computed(() => {
     }
   }
 
-  // Simple style: transparent or semi-transparent to show page background
+  // Simple style: use header background color or transparent
   const hasBackgroundImage = globalTheme.value.backgroundType === 'image' && globalTheme.value.backgroundImageUrl
   const hasBackgroundGradient = globalTheme.value.backgroundType === 'gradient' && globalTheme.value.backgroundGradient
   
@@ -1472,9 +1678,9 @@ const headerContainerStyle = computed(() => {
     }
   }
 
-  // Use surface color when no background image/gradient
+  // Use header background color or surface color
   return {
-    backgroundColor: surface,
+    backgroundColor: headerBgColor,
     color: text
   }
 })
@@ -1555,6 +1761,8 @@ const previewLayoutConfiguration = computed(() => {
         showRestaurantInfo: true,
         showLogo: true,
         headerAlignment: 'center',
+        headerBackgroundImage: null,
+        headerBackgroundColor: '#ffffff',
         tagline: ''
       }
     }
@@ -1571,6 +1779,8 @@ const previewLayoutConfiguration = computed(() => {
         showRestaurantInfo: true,
         showLogo: true,
         headerAlignment: 'center',
+        headerBackgroundImage: null,
+        headerBackgroundColor: '#ffffff',
         tagline: ''
       }
     }
@@ -1917,6 +2127,56 @@ const handleBackgroundUpload = async (event: Event) => {
     toast.error(errorMsg)
   } finally {
     uploadingBackground.value = false
+    if (target) target.value = ''
+  }
+}
+
+const handleHeaderBackgroundUpload = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+
+  if (!file) return
+
+  if (!file.type.startsWith('image/')) {
+    toast.error('Please upload an image file')
+    if (target) target.value = ''
+    return
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    toast.error('Image size must be less than 5MB')
+    if (target) target.value = ''
+    return
+  }
+
+  uploadingHeaderBackground.value = true
+
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await api.post('/files/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    if (response.data.success) {
+      const fileUrl = typeof response.data.data === 'string' ? response.data.data : response.data.data?.url
+      if (!fileUrl) {
+        throw new Error('File URL missing from upload response')
+      }
+      globalSettings.value.headerBackgroundImage = fileUrl
+      toast.success('Header background image uploaded!', 'Success', 3000)
+    } else {
+      toast.error(response.data.message || 'Failed to upload header background')
+    }
+  } catch (error: any) {
+    console.error('Header background upload error:', error)
+    const errorMsg = error?.response?.data?.message || error?.message || 'An error occurred while uploading header background'
+    toast.error(errorMsg)
+  } finally {
+    uploadingHeaderBackground.value = false
     if (target) target.value = ''
   }
 }

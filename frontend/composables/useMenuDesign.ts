@@ -34,6 +34,8 @@ export interface GlobalLayoutSettings {
   showRestaurantInfo: boolean
   showLogo: boolean
   headerAlignment: 'left' | 'center' | 'right'
+  headerBackgroundImage?: string | null
+  headerBackgroundColor?: string
   tagline?: string
   itemDetailModal?: ItemDetailModalSettings
 }

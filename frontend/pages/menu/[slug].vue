@@ -351,7 +351,20 @@ const headerContainerStyles = computed(() => {
   const accent = settings.value.accentColor
   const surface = settings.value.surfaceColor
   const text = settings.value.textColor
+  const headerBgColor = layoutSettings.value.headerBackgroundColor || surface
+  const headerBgImage = layoutSettings.value.headerBackgroundImage
   const style: Record<string, string> = {}
+
+  // If header has a background image, use it (highest priority)
+  if (headerBgImage) {
+    style.backgroundImage = `url("${headerBgImage}")`
+    style.backgroundColor = headerBgColor // Fallback color
+    style.backgroundSize = 'cover'
+    style.backgroundPosition = 'center'
+    style.backgroundRepeat = 'no-repeat'
+    style.color = text
+    return style
+  }
 
   if (layoutSettings.value.headerStyle === 'banner') {
     // Banner style: use gradient background
@@ -364,7 +377,7 @@ const headerContainerStyles = computed(() => {
     style.backdropFilter = 'blur(10px)'
     style.color = '#ffffff'
   } else {
-    // Simple style: transparent or semi-transparent to show page background
+    // Simple style: use header background color or transparent
     const hasBackgroundImage = settings.value.backgroundType === 'image' && settings.value.backgroundImageUrl
     const hasBackgroundGradient = settings.value.backgroundType === 'gradient' && settings.value.backgroundGradient
     
@@ -374,8 +387,8 @@ const headerContainerStyles = computed(() => {
       style.backdropFilter = 'blur(8px)'
       style.color = text
     } else {
-      // Use surface color when no background image/gradient
-      style.backgroundColor = surface
+      // Use header background color or surface color
+      style.backgroundColor = headerBgColor
       style.color = text
     }
   }
