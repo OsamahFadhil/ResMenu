@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   ],
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:5000/api'
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'https://rest.port-4.com/'
     }
   },
   css: ['~/assets/css/main.css']
