@@ -1,9 +1,11 @@
+using System.Linq;
 using System.Text.Json;
 using MediatR;
 using Menufy.Application.Common.Interfaces;
 using Menufy.Application.Common.Models;
 using Menufy.Application.Features.Menus.DTOs;
 using Menufy.Application.Features.Menus.Helpers;
+using Menufy.Application.Features.MenuDesigns.DTOs;
 using Menufy.Application.Features.MenuTemplates.DTOs;
 using Menufy.Application.Features.Restaurants.DTOs;
 using Microsoft.EntityFrameworkCore;
@@ -38,8 +40,42 @@ public class GetPublicMenuQueryHandler : IRequestHandler<GetPublicMenuQuery, Res
             .AsNoTracking()
             .FirstOrDefaultAsync(cancellationToken);
 
-        var categories = await _context.MenuCategories
-            .Where(c => c.RestaurantId == restaurant.Id)
+        // Determine theme and layout config (priority: ActiveDesign.GlobalTheme > CustomTheme > ActiveTemplate.Theme > Default)
+        MenuTemplateThemeDto? theme = null;
+        LayoutConfigurationDto? layoutConfig = null;
+        List<Guid>? configuredCategoryIds = null;
+        
+        if (activeDesign != null)
+        {
+            // Use MenuDesign system (new)
+            try
+            {
+                theme = JsonSerializer.Deserialize<MenuTemplateThemeDto>(activeDesign.GlobalTheme);
+                layoutConfig = JsonSerializer.Deserialize<LayoutConfigurationDto>(activeDesign.LayoutConfiguration);
+                
+                // Extract category IDs from layout configuration
+                if (layoutConfig?.Categories != null && layoutConfig.Categories.Count > 0)
+                {
+                    configuredCategoryIds = layoutConfig.Categories.Select(c => c.CategoryId).ToList();
+                }
+            }
+            catch (JsonException)
+            {
+                // Log error and fall back to legacy system
+            }
+        }
+
+        // Filter categories: if layout config exists and has categories, only fetch those categories
+        // Otherwise, fetch all categories (backward compatibility)
+        var categoriesQuery = _context.MenuCategories
+            .Where(c => c.RestaurantId == restaurant.Id);
+        
+        if (configuredCategoryIds != null && configuredCategoryIds.Count > 0)
+        {
+            categoriesQuery = categoriesQuery.Where(c => configuredCategoryIds.Contains(c.Id));
+        }
+        
+        var categories = await categoriesQuery
             .OrderBy(c => c.DisplayOrder)
             .Include(c => c.MenuItems)
             .AsNoTracking()
@@ -53,24 +89,6 @@ public class GetPublicMenuQueryHandler : IRequestHandler<GetPublicMenuQuery, Res
         var localizedRestaurantName = string.IsNullOrWhiteSpace(request.Language)
             ? restaurant.GetTranslatedName()
             : restaurant.GetTranslatedName(request.Language);
-
-        // Determine theme (priority: ActiveDesign.GlobalTheme > CustomTheme > ActiveTemplate.Theme > Default)
-        MenuTemplateThemeDto? theme = null;
-        MenuDesigns.DTOs.LayoutConfigurationDto? layoutConfig = null;
-        
-        if (activeDesign != null)
-        {
-            // Use MenuDesign system (new)
-            try
-            {
-                theme = JsonSerializer.Deserialize<MenuTemplateThemeDto>(activeDesign.GlobalTheme);
-                layoutConfig = JsonSerializer.Deserialize<MenuDesigns.DTOs.LayoutConfigurationDto>(activeDesign.LayoutConfiguration);
-            }
-            catch (JsonException)
-            {
-                // Log error and fall back to legacy system
-            }
-        }
         
         // Fallback to legacy theme system if no active design
         if (theme == null)
@@ -139,7 +157,7 @@ public class GetPublicMenuQueryHandler : IRequestHandler<GetPublicMenuQuery, Res
             Theme = theme,
             DisplaySettings = displaySettings,
             Currency = restaurant.Currency ?? "USD",
-            LayoutConfiguration = layoutConfig, // New design system
+            LayoutConfiguration = layoutConfig,
             Categories = categoriesDto
         };
 
