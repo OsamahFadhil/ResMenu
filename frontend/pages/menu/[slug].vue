@@ -30,77 +30,111 @@
 
     <!-- Menu Content -->
     <div v-else-if="menu" class="pb-20">
-      <!-- Restaurant Header - Menu Style -->
-      <header class="relative overflow-hidden py-8 sm:py-12 md:py-16" :style="headerContainerStyles">
-        <div class="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="text-center">
-            <!-- Logo -->
+      <!-- Restaurant Header - Professional Style -->
+      <header class="relative overflow-hidden py-12 sm:py-16 md:py-20 lg:py-24" :style="headerContainerStyles">
+        <!-- Overlay for better text readability when using background image -->
+        <div 
+          v-if="(menu?.headerImageUrl) || (settings.backgroundType === 'image' && settings.backgroundImageUrl)"
+          class="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-transparent"
+        ></div>
+        
+        <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div :class="headerContentClasses">
+            <!-- Logo Section -->
             <div
               v-if="layoutSettings.showLogo && menu.logoUrl"
-              class="mb-6 sm:mb-8"
+              :class="logoContainerClasses"
             >
-              <img
-                :src="menu.logoUrl"
-                :alt="menu.restaurantLocalizedName"
-                class="mx-auto w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full object-cover shadow-lg ring-2 ring-white/80 bg-white/90"
-              />
-            </div>
-            
-            <!-- Restaurant Name -->
-            <h1 
-              class="text-4xl sm:text-5xl md:text-6xl font-serif font-bold tracking-wide mb-3 sm:mb-4" 
-              :style="{ 
-                color: headerTextColor,
-                fontFamily: settings.fontFamily || 'Playfair Display, serif',
-                letterSpacing: '0.05em'
-              }"
-            >
-              {{ menu.restaurantLocalizedName || menu.restaurantName }}
-            </h1>
-            
-            <!-- Decorative Line -->
-            <div 
-              class="mx-auto w-32 h-0.5 sm:w-40 mb-4 sm:mb-6"
-              :style="{ backgroundColor: settings.primaryColor || '#dc2626' }"
-            ></div>
-            
-            <!-- Tagline -->
-            <p 
-              v-if="layoutSettings.tagline" 
-              class="text-base sm:text-lg md:text-xl font-medium mb-4 sm:mb-6 italic" 
-              :style="{ color: headerTextColor, opacity: 0.9 }"
-            >
-              {{ layoutSettings.tagline }}
-            </p>
-            
-            <!-- Address -->
-            <div
-              v-if="layoutSettings.showRestaurantInfo && menu.address"
-              class="text-sm sm:text-base opacity-80 mb-4"
-              :style="{ color: headerTextColor }"
-            >
-              {{ menu.address }}
-            </div>
-            
-            <!-- Contact Info -->
-            <div
-              v-if="menu.contactPhone || menu.contactEmail"
-              class="flex flex-wrap items-center justify-center gap-4 text-sm sm:text-base"
-              :style="{ color: headerTextColor, opacity: 0.85 }"
-            >
-              <div v-if="menu.contactPhone" class="flex items-center gap-2">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                </svg>
-                <span>{{ menu.contactPhone }}</span>
+              <div class="relative">
+                <img
+                  :src="menu.logoUrl"
+                  :alt="menu.restaurantLocalizedName"
+                  class="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 rounded-2xl object-cover shadow-2xl ring-4 ring-white/90 bg-white/95 backdrop-blur-sm transition-transform hover:scale-105"
+                />
               </div>
-              <div v-if="menu.contactEmail" class="flex items-center gap-2">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+            </div>
+            
+            <!-- Text Content Section -->
+            <div :class="headerTextContainerClasses">
+              <!-- Restaurant Name -->
+              <h1 
+                class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4 sm:mb-5 leading-tight" 
+                :style="{ 
+                  color: headerTextColor,
+                  fontFamily: settings.fontFamily || 'Inter, sans-serif',
+                  textShadow: (menu?.headerImageUrl || (settings.backgroundType === 'image' && settings.backgroundImageUrl)) ? '0 2px 8px rgba(0,0,0,0.3)' : 'none'
+                }"
+              >
+                {{ menu.restaurantLocalizedName || menu.restaurantName }}
+              </h1>
+              
+              <!-- Decorative Line -->
+              <div 
+                class="w-20 sm:w-24 md:w-32 h-1 mb-5 sm:mb-6 rounded-full"
+                :class="decorativeLineClasses"
+                :style="{ backgroundColor: settings.primaryColor || '#dc2626' }"
+              ></div>
+              
+              <!-- Tagline -->
+              <p 
+                v-if="layoutSettings.tagline" 
+                class="text-lg sm:text-xl md:text-2xl font-medium mb-5 sm:mb-6 leading-relaxed max-w-2xl" 
+                :style="{ 
+                  color: headerTextColor, 
+                  opacity: 0.95,
+                  textShadow: (menu?.headerImageUrl || (settings.backgroundType === 'image' && settings.backgroundImageUrl)) ? '0 1px 4px rgba(0,0,0,0.2)' : 'none'
+                }"
+              >
+                {{ layoutSettings.tagline }}
+              </p>
+              
+              <!-- Address -->
+              <div
+                v-if="layoutSettings.showRestaurantInfo && menu.address"
+                class="flex items-center gap-2 text-sm sm:text-base md:text-lg mb-4 font-medium"
+                :style="{ 
+                  color: headerTextColor, 
+                  opacity: 0.9,
+                  textShadow: (menu?.headerImageUrl || (settings.backgroundType === 'image' && settings.backgroundImageUrl)) ? '0 1px 3px rgba(0,0,0,0.2)' : 'none'
+                }"
+              >
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <a :href="`mailto:${menu.contactEmail}`" class="hover:underline">
-                  {{ menu.contactEmail }}
+                <span>{{ menu.address }}</span>
+              </div>
+              
+              <!-- Contact Info -->
+              <div
+                v-if="menu.contactPhone || menu.contactEmail"
+                class="flex flex-wrap items-center gap-4 sm:gap-6 text-sm sm:text-base"
+                :style="{ 
+                  color: headerTextColor, 
+                  opacity: 0.9,
+                  textShadow: (menu?.headerImageUrl || (settings.backgroundType === 'image' && settings.backgroundImageUrl)) ? '0 1px 3px rgba(0,0,0,0.2)' : 'none'
+                }"
+              >
+                <a 
+                  v-if="menu.contactPhone" 
+                  :href="`tel:${menu.contactPhone}`"
+                  class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all font-medium"
+                >
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                  </svg>
+                  <span>{{ menu.contactPhone }}</span>
+                </a>
+                <a 
+                  v-if="menu.contactEmail" 
+                  :href="`mailto:${menu.contactEmail}`"
+                  class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all font-medium"
+                >
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                  </svg>
+                  <span>{{ menu.contactEmail }}</span>
                 </a>
               </div>
             </div>
@@ -110,12 +144,13 @@
 
       <!-- Search and Filter Bar -->
       <div v-if="displaySettings.enableSearch || displaySettings.enableFilters"
-        class="sticky top-0 z-30 backdrop-blur-md border-b"
+        class="sticky top-0 z-30 backdrop-blur-lg border-b shadow-sm"
         :style="{ 
-          backgroundColor: `${settings.surfaceColor}ee`,
-          borderColor: `${settings.primaryColor}20`
+          backgroundColor: `${settings.surfaceColor}f5`,
+          borderColor: `${settings.primaryColor}15`,
+          backdropFilter: 'blur(12px)'
         }">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
           <div class="space-y-4">
             <!-- Search Bar -->
             <div v-if="displaySettings.enableSearch" class="relative max-w-2xl">
@@ -128,12 +163,12 @@
                 v-model="searchQuery"
                 type="text"
                 :placeholder="t('menu.searchPlaceholder') || 'Search menu items...'"
-                class="w-full pl-14 pr-12 py-4 text-lg rounded-2xl border-2 transition-all focus:outline-none focus:ring-4 font-medium"
+                class="w-full pl-14 pr-12 py-4 text-base sm:text-lg rounded-xl border-2 transition-all focus:outline-none focus:ring-4 font-medium shadow-sm"
                 :style="{
-                  borderColor: searchQuery ? settings.primaryColor : '#e5e7eb',
+                  borderColor: searchQuery ? settings.primaryColor : 'rgba(0,0,0,0.1)',
                   color: settings.textColor,
                   backgroundColor: settings.surfaceColor,
-                  '--tw-ring-color': `${settings.primaryColor}40`
+                  '--tw-ring-color': `${settings.primaryColor}30`
                 }"
               />
               <button
@@ -205,7 +240,7 @@
       </div>
 
       <!-- Menu Categories -->
-      <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-12">
+      <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-16">
         <PublicMenuCategoryTree
           :categories="filteredCategories"
           :settings="settings"
@@ -245,12 +280,16 @@
         <button
           v-if="showScrollTop"
           @click="scrollToTop"
-          class="fixed bottom-8 right-8 p-4 rounded-full shadow-2xl transition-all hover:scale-110 z-40"
-          :style="{ backgroundColor: settings.primaryColor, color: '#ffffff' }"
+          class="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 p-3 sm:p-4 rounded-full shadow-xl transition-all hover:scale-110 hover:shadow-2xl z-40 backdrop-blur-sm"
+          :style="{ 
+            backgroundColor: settings.primaryColor, 
+            color: '#ffffff',
+            boxShadow: `0 10px 25px -5px ${settings.primaryColor}40`
+          }"
           aria-label="Scroll to top"
         >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18" />
           </svg>
         </button>
       </Transition>
@@ -351,20 +390,17 @@ const headerContainerStyles = computed(() => {
   const accent = settings.value.accentColor
   const surface = settings.value.surfaceColor
   const text = settings.value.textColor
-  const headerBgColor = layoutSettings.value.headerBackgroundColor || surface
-  const headerBgImage = layoutSettings.value.headerBackgroundImage
+  
+  // Priority: menu.headerImageUrl > menu.headerColor > page background > layoutSettings.headerBackgroundColor > surface
+  const headerImageUrl = menu.value?.headerImageUrl
+  const headerColor = menu.value?.headerColor
+  const headerBgColor = headerColor ?? layoutSettings.value.headerBackgroundColor ?? surface
+  
   const style: Record<string, string> = {}
 
-  // If header has a background image, use it (highest priority)
-  if (headerBgImage) {
-    style.backgroundImage = `url("${headerBgImage}")`
-    style.backgroundColor = headerBgColor // Fallback color
-    style.backgroundSize = 'cover'
-    style.backgroundPosition = 'center'
-    style.backgroundRepeat = 'no-repeat'
-    style.color = text
-    return style
-  }
+  // Check if page has background image (for fallback)
+  const hasBackgroundImage = settings.value.backgroundType === 'image' && settings.value.backgroundImageUrl
+  const hasBackgroundGradient = settings.value.backgroundType === 'gradient' && settings.value.backgroundGradient
 
   if (layoutSettings.value.headerStyle === 'banner') {
     // Banner style: use gradient background
@@ -377,14 +413,40 @@ const headerContainerStyles = computed(() => {
     style.backdropFilter = 'blur(10px)'
     style.color = '#ffffff'
   } else {
-    // Simple style: use header background color or transparent
-    const hasBackgroundImage = settings.value.backgroundType === 'image' && settings.value.backgroundImageUrl
-    const hasBackgroundGradient = settings.value.backgroundType === 'gradient' && settings.value.backgroundGradient
-    
-    if (hasBackgroundImage || hasBackgroundGradient) {
-      // Transparent header to show page background
-      style.backgroundColor = 'rgba(255, 255, 255, 0.1)'
-      style.backdropFilter = 'blur(8px)'
+    // Simple style: prioritize header image/color from menu design
+    if (headerImageUrl) {
+      // Use header image from menu design (highest priority)
+      style.backgroundImage = `url("${headerImageUrl}")`
+      style.backgroundColor = headerBgColor // Fallback color
+      style.backgroundSize = 'cover'
+      style.backgroundPosition = 'center'
+      style.backgroundRepeat = 'no-repeat'
+      style.color = '#ffffff' // White text for better contrast on images
+    } else if (headerColor) {
+      // Use header color from menu design
+      style.backgroundColor = headerColor
+      style.color = text
+    } else if (hasBackgroundImage) {
+      // Fallback: Use page background image for header
+      let overlayGradient = ''
+      if (settings.value.backgroundOverlay === 'light') {
+        overlayGradient = 'linear-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0.2))'
+      } else if (settings.value.backgroundOverlay === 'dark') {
+        overlayGradient = 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.2))'
+      }
+
+      style.backgroundImage = overlayGradient
+        ? `${overlayGradient}, url("${settings.value.backgroundImageUrl}")`
+        : `url("${settings.value.backgroundImageUrl}")`
+      style.backgroundSize = 'cover'
+      style.backgroundPosition = 'center'
+      style.backgroundRepeat = 'no-repeat'
+      style.backgroundColor = headerBgColor // Fallback color
+      style.color = text
+    } else if (hasBackgroundGradient) {
+      // Fallback: Use page gradient for header
+      style.backgroundImage = settings.value.backgroundGradient
+      style.backgroundColor = headerBgColor // Fallback
       style.color = text
     } else {
       // Use header background color or surface color
@@ -397,18 +459,83 @@ const headerContainerStyles = computed(() => {
 })
 
 const headerContentClasses = computed(() => {
-  const classes = ['flex', 'flex-col', 'lg:flex-row', 'gap-8']
+  // Use headerDisplayMode from menu design (0 = Row, 1 = Column)
+  const displayMode = menu.value?.headerDisplayMode
   const alignment = layoutSettings.value.headerAlignment
-
-  if (alignment === 'left') {
-    classes.push('lg:items-center', 'lg:justify-between')
-  } else if (alignment === 'right') {
-    classes.push('lg:items-center', 'lg:justify-between')
+  
+  const classes: string[] = []
+  
+  if (displayMode === 1) {
+    // Column layout: stack vertically, centered
+    classes.push('flex', 'flex-col', 'items-center', 'text-center', 'gap-6', 'sm:gap-8')
   } else {
-    classes.push('lg:items-center', 'lg:justify-between')
+    // Row layout (default): horizontal on large screens
+    classes.push('flex', 'flex-col', 'lg:flex-row', 'gap-8', 'lg:gap-12')
+    
+    // Apply alignment for row layout
+    if (alignment === 'left') {
+      classes.push('lg:items-center', 'text-left', 'lg:text-left')
+    } else if (alignment === 'right') {
+      classes.push('lg:items-center', 'lg:flex-row-reverse', 'text-right', 'lg:text-right')
+    } else {
+      classes.push('lg:items-center', 'text-center', 'lg:text-left')
+    }
   }
 
   return classes.join(' ')
+})
+
+const logoContainerClasses = computed(() => {
+  const displayMode = menu.value?.headerDisplayMode
+  const alignment = layoutSettings.value.headerAlignment
+  
+  if (displayMode === 1) {
+    // Column: centered
+    return 'mb-4 sm:mb-6'
+  } else {
+    // Row: position based on alignment
+    if (alignment === 'left') {
+      return 'mb-0 lg:mb-0 lg:mr-8'
+    } else if (alignment === 'right') {
+      return 'mb-0 lg:mb-0 lg:ml-8 lg:order-last'
+    } else {
+      return 'mb-6 sm:mb-8 lg:mb-0 lg:mr-8'
+    }
+  }
+})
+
+const headerTextContainerClasses = computed(() => {
+  const displayMode = menu.value?.headerDisplayMode
+  const alignment = layoutSettings.value.headerAlignment
+  
+  if (displayMode === 1) {
+    return 'text-center w-full'
+  } else {
+    if (alignment === 'left') {
+      return 'flex-1 text-left'
+    } else if (alignment === 'right') {
+      return 'flex-1 text-right'
+    } else {
+      return 'flex-1 text-center lg:text-left'
+    }
+  }
+})
+
+const decorativeLineClasses = computed(() => {
+  const displayMode = menu.value?.headerDisplayMode
+  const alignment = layoutSettings.value.headerAlignment
+  
+  if (displayMode === 1) {
+    return 'mx-auto'
+  } else {
+    if (alignment === 'left') {
+      return 'ml-0'
+    } else if (alignment === 'right') {
+      return 'ml-auto'
+    } else {
+      return 'mx-auto lg:mx-0'
+    }
+  }
 })
 
 const headerTextClasses = computed(() => {
@@ -425,7 +552,29 @@ const headerLogoOrderClass = computed(() => {
   return 'order-0 lg:order-none'
 })
 
-const headerTextColor = computed(() => headerContainerStyles.value.color || settings.value.textColor)
+const headerTextColor = computed(() => {
+  // Priority: header image > page background image > banner/overlay style > default
+  const hasHeaderImage = menu.value?.headerImageUrl
+  const hasBackgroundImage = settings.value.backgroundType === 'image' && settings.value.backgroundImageUrl
+  
+  // If header has an image, use white text for better contrast
+  if (hasHeaderImage) {
+    return '#ffffff'
+  }
+  
+  // If page has a background image, use white text for better contrast
+  if (hasBackgroundImage) {
+    return '#ffffff'
+  }
+  
+  // If header style is banner or overlay, use white text
+  if (layoutSettings.value.headerStyle === 'banner' || layoutSettings.value.headerStyle === 'overlay') {
+    return '#ffffff'
+  }
+  
+  // Otherwise use the color from headerContainerStyles or default text color
+  return headerContainerStyles.value.color || settings.value.textColor
+})
 
 // Flatten categories
 const allCategories = computed(() => {

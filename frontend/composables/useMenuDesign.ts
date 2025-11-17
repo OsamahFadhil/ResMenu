@@ -55,6 +55,9 @@ export interface MenuDesign {
   name?: string
   createdAt: string
   updatedAt: string
+  headerColor?: string | null
+  headerImageUrl?: string | null
+  headerDisplayMode?: number | null // 0 = Row, 1 = Column
 }
 
 export interface SaveMenuDesignPayload {
@@ -63,6 +66,9 @@ export interface SaveMenuDesignPayload {
   globalTheme: TemplateTheme
   name?: string
   setAsActive: boolean
+  headerColor?: string | null
+  headerImageUrl?: string | null
+  headerDisplayMode?: number | null // 0 = Row, 1 = Column
 }
 
 export interface SaveMenuDesignResult {
@@ -115,11 +121,15 @@ export const useMenuDesign = () => {
     loading.value = true
     error.value = null
     try {
+      console.log('Sending menu design payload:', JSON.stringify(payload, null, 2))
       const response = await api.post('/menu-design', payload)
+      console.log('Menu design saved successfully:', response.data)
       return response.data
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Failed to save menu design'
       console.error('Failed to save menu design:', err)
+      console.error('Error response:', err.response?.data)
+      console.error('Payload that failed:', JSON.stringify(payload, null, 2))
       return null
     } finally {
       loading.value = false

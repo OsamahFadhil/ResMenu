@@ -158,6 +158,9 @@ public class GetPublicMenuQueryHandler : IRequestHandler<GetPublicMenuQuery, Res
             DisplaySettings = displaySettings,
             Currency = restaurant.Currency ?? "USD",
             LayoutConfiguration = layoutConfig,
+            HeaderColor = activeDesign?.HeaderColor,
+            HeaderImageUrl = activeDesign?.HeaderImageUrl,
+            HeaderDisplayMode = activeDesign?.HeaderDisplayMode,
             Categories = categoriesDto
         };
 

@@ -73,6 +73,10 @@ public class MenuDesignController : ControllerBase
     public async Task<ActionResult<SaveMenuDesignResultDto>> SaveDesign([FromBody] SaveMenuDesignDto data)
     {
         _logger.LogInformation("Saving new menu design for restaurant {RestaurantId}", data.RestaurantId);
+        _logger.LogInformation("Header settings - Color: {HeaderColor}, ImageUrl: {HeaderImageUrl}, DisplayMode: {HeaderDisplayMode}", 
+            data.HeaderColor ?? "null", 
+            data.HeaderImageUrl ?? "null", 
+            data.HeaderDisplayMode?.ToString() ?? "null");
 
         try
         {

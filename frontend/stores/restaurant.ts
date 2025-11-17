@@ -78,6 +78,10 @@ interface PublicMenu {
   theme?: any;  // MenuTemplateThemeDto
   displaySettings?: any;  // MenuDisplaySettingsDto
   currency?: string;
+  layoutConfiguration?: any;  // LayoutConfigurationDto
+  headerColor?: string | null;
+  headerImageUrl?: string | null;
+  headerDisplayMode?: number | null;  // 0 = Row, 1 = Column
   categories: MenuCategory[];
 }
 

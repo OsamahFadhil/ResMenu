@@ -624,6 +624,7 @@
                 <label class="block mb-2 text-xs font-medium text-neutral-700">Header Background Color</label>
                 <input
                   v-model="globalSettings.headerBackgroundColor"
+                  @input="headerColor = globalSettings.headerBackgroundColor || null"
                   type="color"
                   class="w-full h-10 rounded-lg border-2 cursor-pointer border-neutral-300"
                 />
@@ -643,7 +644,7 @@
                     class="object-cover w-full h-32 rounded-lg border border-neutral-300"
                   />
                   <button
-                    @click="globalSettings.headerBackgroundImage = null"
+                    @click="globalSettings.headerBackgroundImage = null; headerImageUrl = null"
                     class="absolute top-2 right-2 p-1.5 text-white bg-red-500 rounded-full shadow-md transition hover:bg-red-600"
                     title="Remove header background"
                   >
@@ -679,12 +680,45 @@
                     <label class="block mb-1 text-xs font-medium text-neutral-700">Image URL</label>
                     <input
                       v-model="globalSettings.headerBackgroundImage"
+                      @input="headerImageUrl = globalSettings.headerBackgroundImage || null"
                       type="text"
                       placeholder="https://example.com/header-bg.jpg"
                       class="px-3 py-2 w-full text-sm rounded-lg border border-neutral-300"
                     />
                   </div>
                 </div>
+              </div>
+
+              <!-- Header Display Mode -->
+              <div>
+                <label class="block mb-2 text-xs font-medium text-neutral-700">Header Display Mode</label>
+                <div class="grid grid-cols-2 gap-2">
+                  <button
+                    @click="headerDisplayMode = 0"
+                    :class="[
+                      'px-3 py-2 text-xs rounded-lg border-2 transition',
+                      headerDisplayMode === 0
+                        ? 'border-primary-600 bg-primary-50 text-primary-700'
+                        : 'border-neutral-300 text-neutral-700 hover:border-neutral-400'
+                    ]"
+                  >
+                    Row
+                  </button>
+                  <button
+                    @click="headerDisplayMode = 1"
+                    :class="[
+                      'px-3 py-2 text-xs rounded-lg border-2 transition',
+                      headerDisplayMode === 1
+                        ? 'border-primary-600 bg-primary-50 text-primary-700'
+                        : 'border-neutral-300 text-neutral-700 hover:border-neutral-400'
+                    ]"
+                  >
+                    Column
+                  </button>
+                </div>
+                <p class="mt-1 text-xs text-neutral-500">
+                  Layout direction for header content (logo and text).
+                </p>
               </div>
 
               <!-- Header Tagline -->
@@ -1267,6 +1301,7 @@
                     <label class="block mb-2 text-xs font-medium text-neutral-700">Header Background Color</label>
                     <input
                       v-model="globalSettings.headerBackgroundColor"
+                      @input="headerColor = globalSettings.headerBackgroundColor || null"
                       type="color"
                       class="w-full h-10 rounded-lg border-2 cursor-pointer border-neutral-300"
                     />
@@ -1286,7 +1321,7 @@
                         class="object-cover w-full h-32 rounded-lg border border-neutral-300"
                       />
                       <button
-                        @click="globalSettings.headerBackgroundImage = null"
+                        @click="globalSettings.headerBackgroundImage = null; headerImageUrl = null"
                         class="absolute top-2 right-2 p-1.5 text-white bg-red-500 rounded-full shadow-md transition hover:bg-red-600"
                         title="Remove header background"
                       >
@@ -1322,12 +1357,45 @@
                         <label class="block mb-1 text-xs font-medium text-neutral-700">Image URL</label>
                         <input
                           v-model="globalSettings.headerBackgroundImage"
+                          @input="headerImageUrl = globalSettings.headerBackgroundImage || null"
                           type="text"
                           placeholder="https://example.com/header-bg.jpg"
                           class="px-3 py-2 w-full text-sm rounded-lg border border-neutral-300"
                         />
                       </div>
                     </div>
+                  </div>
+
+                  <!-- Header Display Mode -->
+                  <div>
+                    <label class="block mb-2 text-xs font-medium text-neutral-700">Header Display Mode</label>
+                    <div class="grid grid-cols-2 gap-2">
+                      <button
+                        @click="headerDisplayMode = 0"
+                        :class="[
+                          'px-3 py-2 text-xs rounded-lg border-2 transition',
+                          headerDisplayMode === 0
+                            ? 'border-primary-600 bg-primary-50 text-primary-700'
+                            : 'border-neutral-300 text-neutral-700 hover:border-neutral-400'
+                        ]"
+                      >
+                        Row
+                      </button>
+                      <button
+                        @click="headerDisplayMode = 1"
+                        :class="[
+                          'px-3 py-2 text-xs rounded-lg border-2 transition',
+                          headerDisplayMode === 1
+                            ? 'border-primary-600 bg-primary-50 text-primary-700'
+                            : 'border-neutral-300 text-neutral-700 hover:border-neutral-400'
+                        ]"
+                      >
+                        Column
+                      </button>
+                    </div>
+                    <p class="mt-1 text-xs text-neutral-500">
+                      Layout direction for header content (logo and text).
+                    </p>
                   </div>
 
                   <!-- Header Tagline -->
@@ -1603,6 +1671,11 @@ const uploadingBackground = ref(false)
 const headerBackgroundFileInput = ref<HTMLInputElement | null>(null)
 const uploadingHeaderBackground = ref(false)
 const restaurantCurrency = ref('USD')
+
+// Header settings (separate from globalSettings for backend API)
+const headerColor = ref<string | null>(null)
+const headerImageUrl = ref<string | null>(null)
+const headerDisplayMode = ref<number | null>(0) // 0 = Row, 1 = Column
 
 const cloneDeep = <T>(value: T): T => {
   if (value === null || value === undefined) {
@@ -2167,6 +2240,7 @@ const handleHeaderBackgroundUpload = async (event: Event) => {
         throw new Error('File URL missing from upload response')
       }
       globalSettings.value.headerBackgroundImage = fileUrl
+      headerImageUrl.value = fileUrl
       toast.success('Header background image uploaded!', 'Success', 3000)
     } else {
       toast.error(response.data.message || 'Failed to upload header background')
@@ -2223,6 +2297,46 @@ const saveDesign = async (silent = false) => {
       cat.displayOrder = index + 1
     })
 
+    // Sync header settings from globalSettings to header state
+    // Priority: headerColor/headerImageUrl state > globalSettings > null
+    // Handle empty strings as null
+    const getHeaderColor = () => {
+      // Check if headerColor state is explicitly set (not null/undefined)
+      if (headerColor.value !== null && headerColor.value !== undefined && headerColor.value.trim()) {
+        return headerColor.value.trim()
+      }
+      // Fallback to globalSettings
+      if (globalSettings.value.headerBackgroundColor && globalSettings.value.headerBackgroundColor.trim()) {
+        return globalSettings.value.headerBackgroundColor.trim()
+      }
+      return null
+    }
+    
+    const getHeaderImageUrl = () => {
+      // Check if headerImageUrl state is explicitly set (not null/undefined)
+      if (headerImageUrl.value !== null && headerImageUrl.value !== undefined && headerImageUrl.value.trim()) {
+        return headerImageUrl.value.trim()
+      }
+      // Fallback to globalSettings
+      if (globalSettings.value.headerBackgroundImage && globalSettings.value.headerBackgroundImage.trim()) {
+        return globalSettings.value.headerBackgroundImage.trim()
+      }
+      return null
+    }
+    
+    const finalHeaderColor = getHeaderColor()
+    const finalHeaderImageUrl = getHeaderImageUrl()
+
+    console.log('Saving design with header settings:', {
+      headerColor: finalHeaderColor,
+      headerImageUrl: finalHeaderImageUrl,
+      headerDisplayMode: headerDisplayMode.value,
+      headerColorValue: headerColor.value,
+      headerImageUrlValue: headerImageUrl.value,
+      globalSettingsHeaderColor: globalSettings.value.headerBackgroundColor,
+      globalSettingsHeaderImage: globalSettings.value.headerBackgroundImage
+    })
+
     const result = await saveDesignApi({
       restaurantId: authStore.restaurantId,
       layoutConfiguration: {
@@ -2230,7 +2344,10 @@ const saveDesign = async (silent = false) => {
         globalSettings: globalSettings.value
       },
       globalTheme: globalTheme.value,
-      setAsActive: true
+      setAsActive: true,
+      headerColor: finalHeaderColor,
+      headerImageUrl: finalHeaderImageUrl,
+      headerDisplayMode: headerDisplayMode.value
     })
 
     if (result) {
@@ -2313,6 +2430,26 @@ onMounted(async () => {
         if (globalTheme.value.backgroundImageUrl) {
           globalTheme.value.backgroundType = globalTheme.value.backgroundType || 'image'
         }
+        
+        // Load header settings
+        if (existingDesign.headerColor !== undefined) {
+          headerColor.value = existingDesign.headerColor
+          // Sync to globalSettings for backward compatibility
+          if (existingDesign.headerColor) {
+            globalSettings.value.headerBackgroundColor = existingDesign.headerColor
+          }
+        }
+        if (existingDesign.headerImageUrl !== undefined) {
+          headerImageUrl.value = existingDesign.headerImageUrl
+          // Sync to globalSettings for backward compatibility
+          if (existingDesign.headerImageUrl) {
+            globalSettings.value.headerBackgroundImage = existingDesign.headerImageUrl
+          }
+        }
+        if (existingDesign.headerDisplayMode !== undefined && existingDesign.headerDisplayMode !== null) {
+          headerDisplayMode.value = existingDesign.headerDisplayMode
+        }
+        
         toast.info('Loaded existing design')
       } catch (error) {
         console.error('Failed to load existing design data:', error)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Menufy.Application.Features.MenuTemplates.DTOs;
 using Menufy.Application.Features.Restaurants.DTOs;
 using Menufy.Application.Features.MenuDesigns.DTOs;
+using Menufy.Domain.Enums;
 
 namespace Menufy.Application.Features.Menus.DTOs;
 
@@ -24,6 +25,11 @@ public class PublicMenuDto
     
     // New Design System
     public LayoutConfigurationDto? LayoutConfiguration { get; set; }
+    
+    // Header settings from MenuDesign
+    public string? HeaderColor { get; set; }
+    public string? HeaderImageUrl { get; set; }
+    public DisplayMode? HeaderDisplayMode { get; set; }
     
     public List<MenuCategoryDto> Categories { get; set; } = new();
 }
